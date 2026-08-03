@@ -1,0 +1,16 @@
+build/
+dist/
+lib/
+.DS_Store
+._*
+*.log
+*.tmp
+*.class
+summary.txt
+*.jar
+*.exe
+*.dll
+*.dylib
+*.so
+__pycache__/
+*.pyc
