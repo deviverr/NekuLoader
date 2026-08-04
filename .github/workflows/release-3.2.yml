@@ -1,0 +1,74 @@
+name: Release NekuLoader 3.2 Alpha
+
+on:
+  push:
+    tags:
+      - "v3.2.0-alpha.*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish-tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-14
+            args: "--bundles dmg,app"
+          - platform: macos-15-intel
+            args: "--bundles dmg,app"
+          - platform: ubuntu-22.04
+            args: "--bundles appimage,deb,rpm"
+          - platform: windows-2022
+            args: "--bundles nsis,msi"
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Install Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: >-
+          sudo apt-get update && sudo apt-get install -y
+          libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@4cda84d5c5c54efe2404f9d843567869ab1699d4
+        with:
+          toolchain: 1.95.0
+      - name: Install frontend dependencies
+        working-directory: apps/desktop
+        run: npm ci
+      - uses: tauri-apps/tauri-action@fce9c6108b31ea247710505d3aaaa893ee6768d4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: apps/desktop
+          tagName: ${{ github.ref_name }}
+          releaseName: "NekuLoader ${{ github.ref_name }}"
+          releaseBody: |
+            NekuLoader 3.2 is a ground-up native rewrite for macOS, Windows, and Linux.
+
+            Highlights:
+            - Automatic source and track/album/playlist detection
+            - Persistent download queue, progress, pause/resume, metadata, artwork, and library scan
+            - Managed yt-dlp, FFmpeg, Deno, and SpotDL components with integrity checks
+            - Refined Classic Legacy interface, original pink-cat icon, loading animation, particles, and working synthesized sounds
+            - One-time import of NekuLoader 3.1 settings and history
+
+            This is an alpha and not yet the stable replacement for NekuLoader 3.1. Spotify uses SpotDL metadata matching, so it is not a direct Spotify audio download. Deezer and Apple Music are recognized but not downloadable in this alpha. FLAC is a lossless output container and cannot increase source quality.
+
+            Packages are produced for Apple silicon and Intel Macs, Windows x64, and Linux x64. This alpha intentionally uses no project signing credentials: there is no Tauri updater signature, Apple Developer ID/notarization, or Windows Authenticode signature. Expect operating-system security prompts during testing and download updates manually from this Releases page.
+
+            Because this repository is private, installed alpha builds cannot fetch GitHub release updates without authenticated public hosting; update this alpha manually from the Releases page.
+
+            Use NekuLoader only for media you own or are authorized to download.
+          releaseDraft: true
+          prerelease: true
+          args: ${{ matrix.args }}

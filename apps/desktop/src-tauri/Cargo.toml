@@ -1,0 +1,41 @@
+[package]
+name = "nekuloader-desktop"
+version = "3.2.0-alpha.1"
+description = "NekuLoader native cross-platform music downloader"
+authors = ["deviverr"]
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "nekuloader_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-log = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-window-state = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1"
+reqwest = { version = "0.13.4", default-features = false, features = ["rustls"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+sha2 = "0.10"
+tar = "0.4"
+thiserror = "2"
+tokio = { version = "1", features = ["fs", "io-util", "macros", "process", "rt-multi-thread", "sync", "time"] }
+tokio-util = "0.7"
+url = "2"
+uuid = { version = "1", features = ["serde", "v4"] }
+xz2 = "0.1"
+zip = { version = "4", default-features = false, features = ["deflate"] }
