@@ -1,52 +1,71 @@
-# NekuLoader 3.1
+# NekuLoader
 
-NekuLoader is a Java desktop download manager and local music library/player for macOS and Windows. This source tree was recovered from the creator's packaged JAR and is being restored into a maintainable release.
+NekuLoader is a cross-platform desktop music and playlist downloader. The repository now contains two generations:
 
-Use NekuLoader only for media you own or are authorized to download. Provider support does not grant rights to copy protected material.
+- **3.2 alpha** — the new Tauri 2, Rust, React, and TypeScript application in `apps/desktop`.
+- **3.1 legacy** — the recovered Java application under `src`, preserved for reference and migration.
 
-## Features
+NekuLoader is for media you own or are authorized to download. Recognizing a provider link does not grant permission to copy its content or bypass its access controls.
 
-- YouTube, YouTube Music, and SoundCloud extraction through yt-dlp
-- Spotify metadata matching through SpotDL providers
-- Deezer and Apple Music album/track metadata parsing followed by audio matching
-- MP3, FLAC, Opus, M4A/AAC, WAV, ALAC, and OGG Vorbis output where supported
-- Sequential URL queue, duplicate archive, metadata, artwork, and persistent history
-- Local recursive music library with artwork, tags, play/pause, seek, volume, and previous/next
-- Android ADB transfer with album folders and media-library refresh
-- Finder/Apple Devices/File Sharing export for iPhone, iPad, and iPod
-- Legacy and Modern appearances
+## NekuLoader 3.2 alpha
 
-Apple Music playlist parsing is gated because it requires authenticated Apple Music API access. Spotify matching currently excludes ALAC; use FLAC or M4A instead.
+The 3.2 rewrite is a native app rather than a Java JAR. It currently includes automatic link recognition, a persistent download queue, local history, a searchable music-folder scan, managed downloader components, the original NekuLoader icon, and the refined legacy interface.
 
-## Build And Run
+### Current provider behavior
+
+| Provider | 3.2 alpha behavior |
+| --- | --- |
+| YouTube / YouTube Music | Direct extraction through yt-dlp when the media is accessible |
+| SoundCloud | Direct extraction through yt-dlp when the media is accessible |
+| Spotify | Metadata-matching download through SpotDL; the matched audio source and quality can differ from Spotify's catalog stream |
+| Deezer | Link recognition only; metadata matching and audio download are not implemented yet |
+| Apple Music | Link recognition only; metadata matching and audio download are not implemented yet |
+
+Choosing FLAC, WAV, or another output format does not improve the source. A lossless output can avoid an additional lossy encode, but it cannot recover detail that was not present in the downloaded audio.
+
+### Managed components
+
+Settings → Components & updates provides an explicit **Install required components** or **Update required components** action. NekuLoader does not silently download the toolchain at startup.
+
+The action installs or updates yt-dlp, Deno, FFmpeg, and FFprobe in the app-data directory. It also attempts to install optional SpotDL where upstream publishes a managed build for the current platform; manual system installations are detected on other platforms. Release assets are SHA-256 verified against their published GitHub metadata, downloaded to staging, and health-checked before promotion. An optional SpotDL failure does not block the required toolchain.
+
+On first run, missing required components open Settings with an actionable notice. Installation still requires a click; nothing is downloaded silently.
+
+Application updates are manual for this alpha. Settings links to GitHub Releases; no updater or platform-signing credential is embedded in the app or release workflow. Component installation and updates remain independently integrity-checked and available from Settings.
+
+### Develop and test 3.2
+
+Requirements:
+
+- Node.js 24
+- Rust toolchain from `apps/desktop/rust-toolchain.toml`
+- Tauri 2 platform prerequisites for the current operating system
+
+```bash
+cd apps/desktop
+npm ci
+npm run check
+npm run build
+npm run tauri dev
+```
+
+`npm run dev` runs a browser-only interface preview. Filesystem scans, component installation, and native downloads are intentionally unavailable there.
+
+See [`apps/desktop/README.md`](apps/desktop/README.md) for implementation details and [`docs/RELEASING.md`](docs/RELEASING.md) for the release checklist and current signing limitations.
+
+## NekuLoader 3.1 legacy
+
+The Java edition supports its historical provider workflows, multiple output formats, a sequential queue, metadata and artwork, a local library/player, and device-transfer helpers. Its source was recovered from the packaged application and remains available while 3.2 reaches parity.
 
 Requirements: JDK 17 or newer, curl, yt-dlp, SpotDL, and FFmpeg/FFprobe. Android transfer additionally requires ADB.
 
 ```bash
 ./build.sh
+./test.sh
 ./run.sh
 ```
 
-On macOS, install the command-line dependencies with:
-
-```bash
-./setup-mac-tools.sh
-```
-
-The Java build downloads FlatLaf `3.7.2`, org.json `20260522`, and JLayer `1.0.1` into `lib/`, then creates `build/NekuLoader-3.1.0.jar`.
-
-## Tests
-
-```bash
-./test.sh
-RUN_AUDIO_PLAYBACK_TEST=1 ./test.sh
-```
-
-The suite covers provider capability gates, persistent history, FFprobe metadata, FFmpeg playback, and Android transfer through a fake ADB integration fixture.
-
-## Native Packages
-
-Native packages must be built on their target operating system with a full JDK 21 containing `jpackage`:
+Native Java packages require a full JDK 21 containing `jpackage`:
 
 ```bash
 ./package.sh dmg       # macOS
@@ -54,12 +73,10 @@ Native packages must be built on their target operating system with a full JDK 2
 ./package.sh deb       # Debian/Ubuntu
 ```
 
-The package includes a Java runtime and the NekuLoader application. Version 3.1 discovers yt-dlp, SpotDL, FFmpeg, Node/Deno, and ADB from the host `PATH`, common macOS installation folders, or supported app-adjacent folders. This also works when macOS launches the app with Finder's restricted `PATH`. Advanced users can override discovery with `NEKULOADER_YT_DLP`, `NEKULOADER_PYTHON`, `NEKULOADER_SPOTDL`, `NEKULOADER_FFMPEG`, `NEKULOADER_FFPROBE`, and `NEKULOADER_ADB`. The Packager does not claim those tools are bundled.
+The 3.1 package discovers tools from the host `PATH`, common installation folders, or supported app-adjacent folders. It does not bundle those tools through the maintained source build.
 
-The current macOS artifact is ad-hoc signed. Public distribution still requires an Apple Developer ID certificate and notarization. Windows release testing and code signing must be performed on Windows.
+## Release status
 
-## Project Status
+NekuLoader 3.2 is a prerelease and is not yet the stable replacement for 3.1. The release workflow builds draft platform artifacts without project signing credentials. Public distribution still requires target-platform smoke testing and an intentional Apple/Windows signing policy; alpha updates are downloaded manually from GitHub Releases.
 
-The original activation/license gate has been removed. This recovered code is suitable for continued development, but a public source release still needs a chosen project license, a Windows test matrix, signed release artifacts, and confirmation that all redistributed third-party binaries and assets have compatible notices.
-
-See `THIRD_PARTY_NOTICES.md` for dependency information.
+No project license has been selected in this repository. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) before redistributing source, assets, helper tools, or installers.
