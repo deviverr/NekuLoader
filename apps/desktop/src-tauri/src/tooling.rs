@@ -959,15 +959,15 @@ fn promote_all(pairs: &[(&Path, &Path)]) -> Result<(), String> {
     Ok(())
 }
 
-fn make_executable(path: &Path) -> Result<(), String> {
+fn make_executable(_path: &Path) -> Result<(), String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        let mut permissions = fs::metadata(path)
+        let mut permissions = fs::metadata(_path)
             .map_err(|error| error.to_string())?
             .permissions();
         permissions.set_mode(0o755);
-        fs::set_permissions(path, permissions).map_err(|error| error.to_string())?;
+        fs::set_permissions(_path, permissions).map_err(|error| error.to_string())?;
     }
     Ok(())
 }
