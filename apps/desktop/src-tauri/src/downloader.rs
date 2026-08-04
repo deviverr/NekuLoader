@@ -944,14 +944,9 @@ mod tests {
             argument_value(&args, "--yt-dlp-args"),
             Some("--ignore-config --no-plugin-dirs --no-exec --no-update")
         );
-        let expected_output = Path::new(&job.request.output_dir)
-            .join("{list-name}")
-            .join("{list-position} - {title}.{output-ext}")
-            .to_string_lossy()
-            .into_owned();
         assert_eq!(
-            argument_value(&args, "--output"),
-            Some(expected_output.as_str())
+            argument_value(&args, "--output").map(|value| value.replace('\\', "/")),
+            Some("/tmp/Neku music;safe/{list-name}/{list-position} - {title}.{output-ext}".into())
         );
         assert!(!args.iter().any(|argument| argument == "--audio-format"));
     }
