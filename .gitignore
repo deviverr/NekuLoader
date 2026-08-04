@@ -1,6 +1,8 @@
 build/
 dist/
 lib/
+!apps/desktop/src/lib/
+!apps/desktop/src/lib/**
 .DS_Store
 ._*
 *.log
