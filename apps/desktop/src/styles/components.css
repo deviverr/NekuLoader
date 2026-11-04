@@ -1,0 +1,389 @@
+/*
+ * Shared controls.
+ *
+ * Everything is monospace and squared off so the chrome sits in the same
+ * visual language as the block-glyph art: buttons wear bracket glyphs, panels
+ * wear box-drawing corner ticks, and nothing uses a pill or a soft shadow that
+ * would read as a different design system.
+ */
+
+/* --- panels ------------------------------------------------------------ */
+
+.panel {
+  position: relative;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-panel);
+  background: color-mix(in srgb, var(--surface) calc(var(--frame-alpha) * 100%), transparent);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
+/* Diagonal corner ticks — two pseudo-elements, so opposite corners only. */
+.panel::before,
+.panel::after {
+  position: absolute;
+  color: var(--border-bright);
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.panel::before {
+  content: "┌";
+  top: -1px;
+  left: 1px;
+}
+
+.panel::after {
+  content: "┘";
+  right: 1px;
+  bottom: -1px;
+}
+
+.panel__body {
+  padding: 18px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+/* --- buttons ----------------------------------------------------------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.button::before {
+  content: "[";
+  color: var(--border-bright);
+  opacity: 0.7;
+}
+
+.button::after {
+  content: "]";
+  color: var(--border-bright);
+  opacity: 0.7;
+}
+
+.button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--border-bright);
+  background: color-mix(in srgb, var(--action) 24%, transparent);
+}
+
+.button:disabled {
+  opacity: 0.45;
+}
+
+.button--primary {
+  border-color: var(--action-hover);
+  background: linear-gradient(180deg, var(--action-hover), var(--action));
+  color: var(--text);
+}
+
+.button--primary::before {
+  content: "▶";
+}
+
+.button--primary::after {
+  content: "";
+}
+
+.button--danger {
+  border-color: color-mix(in srgb, var(--danger) 50%, transparent);
+  color: var(--danger);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.icon-button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--border-bright);
+}
+
+.icon-button--accent {
+  color: var(--success);
+}
+
+/* --- fields ------------------------------------------------------------ */
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: var(--log-bg);
+}
+
+.field:focus-within {
+  border-color: var(--focus);
+}
+
+.field input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 12px;
+}
+
+.field input::placeholder {
+  color: var(--text-faint);
+}
+
+.field__marker {
+  color: var(--border-bright);
+}
+
+select {
+  min-height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  font-size: 11px;
+}
+
+input[type="range"] {
+  accent-color: var(--action-hover);
+}
+
+input[type="color"] {
+  width: 42px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: none;
+}
+
+/* --- toggle ------------------------------------------------------------ */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 11px;
+  text-align: left;
+}
+
+.toggle:hover {
+  background: color-mix(in srgb, var(--action) 14%, transparent);
+}
+
+.toggle > span {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+/* The switch is drawn with glyphs so it matches the surrounding chrome. */
+.toggle > .toggle__box {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  font-weight: 700;
+}
+
+.toggle[aria-checked="true"] .toggle__box {
+  color: var(--success);
+}
+
+/* --- chips and progress ------------------------------------------------ */
+
+.chip {
+  padding: 3px 7px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  color: var(--text-faint);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chip--completed {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+}
+.chip--failed {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+}
+.chip--downloading,
+.chip--converting,
+.chip--preparing {
+  color: var(--cyan);
+  border-color: color-mix(in srgb, var(--cyan) 40%, transparent);
+}
+
+/*
+ * Progress is rendered as a run of block glyphs rather than a filled div, so a
+ * bar looks like the rest of the interface. The track is the empty glyph row
+ * and the fill is clipped over it.
+ */
+.progress {
+  position: relative;
+  overflow: hidden;
+  color: var(--text-faint);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.progress__fill {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--cyan);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--cyan) 60%, transparent);
+  white-space: nowrap;
+  transition: width 0.3s ease;
+}
+
+/* --- terminal log ------------------------------------------------------ */
+
+.terminal {
+  max-height: 220px;
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: var(--log-bg);
+  color: var(--log-text);
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+/* --- states ------------------------------------------------------------ */
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 200px;
+  padding: 24px;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.notice--error {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+.notice--warning {
+  color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 40%, transparent);
+  background: color-mix(in srgb, var(--warning) 8%, transparent);
+}
+.notice--success {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  background: color-mix(in srgb, var(--success) 8%, transparent);
+}
+.notice--info {
+  color: var(--cyan);
+  border-color: color-mix(in srgb, var(--cyan) 40%, transparent);
+  background: color-mix(in srgb, var(--cyan) 8%, transparent);
+}
+
+/* --- toasts ------------------------------------------------------------ */
+
+.toast-stack {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  display: grid;
+  gap: 8px;
+  width: min(340px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.toast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow);
+  font-size: 11px;
+  line-height: 1.45;
+  animation: toast-in calc(220ms / max(var(--motion-scale), 0.001)) ease-out;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
+.toast--success {
+  color: var(--success);
+}
+.toast--error {
+  color: var(--danger);
+}
+.toast--info {
+  color: var(--cyan);
+}

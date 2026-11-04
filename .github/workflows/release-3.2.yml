@@ -27,6 +27,9 @@ jobs:
           - platform: windows-2022
             args: "--bundles nsis,msi"
     runs-on: ${{ matrix.platform }}
+    env:
+      CARGO_PROFILE_RELEASE_STRIP: none
+      CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_STRIP: none
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Install Linux desktop dependencies
@@ -42,12 +45,46 @@ jobs:
       - uses: dtolnay/rust-toolchain@4cda84d5c5c54efe2404f9d843567869ab1699d4
         with:
           toolchain: 1.95.0
+      - name: Check release version
+        working-directory: apps/desktop
+        shell: bash
+        run: |
+          node -e 'const v=require("./package.json").version; if(process.env.GITHUB_REF_NAME !== `v${v}`) throw new Error("Release tag does not match the application version")'
+      - name: Validate requested Apple signing setup
+        if: runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          names = ["APPLE_CERTIFICATE", "APPLE_CERTIFICATE_PASSWORD", "APPLE_SIGNING_IDENTITY", "APPLE_ID", "APPLE_PASSWORD", "APPLE_TEAM_ID"]
+          missing = [name for name in names if not os.environ.get(name)]
+          if missing:
+              raise SystemExit("Missing Apple signing secrets: " + ", ".join(missing))
+          PYTHON
       - name: Install frontend dependencies
         working-directory: apps/desktop
         run: npm ci
+      - name: Verify frontend
+        working-directory: apps/desktop
+        run: npm run check
+      - name: Verify backend
+        working-directory: apps/desktop
+        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
       - uses: tauri-apps/tauri-action@fce9c6108b31ea247710505d3aaaa893ee6768d4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_CERTIFICATE: ${{ runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_CERTIFICATE || '' }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+          APPLE_SIGNING_IDENTITY: ${{ runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_SIGNING_IDENTITY || '' }}
+          APPLE_ID: ${{ runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_ID || '' }}
+          APPLE_PASSWORD: ${{ runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_TEAM_ID || '' }}
         with:
           projectPath: apps/desktop
           tagName: ${{ github.ref_name }}
@@ -62,13 +99,17 @@ jobs:
             - Refined Classic Legacy interface, original pink-cat icon, loading animation, particles, and working synthesized sounds
             - One-time import of NekuLoader 3.1 settings and history
 
-            This is an alpha and not yet the stable replacement for NekuLoader 3.1. Spotify uses SpotDL metadata matching, so it is not a direct Spotify audio download. Deezer and Apple Music are recognized but not downloadable in this alpha. FLAC is a lossless output container and cannot increase source quality.
+            This is an alpha and not yet the stable replacement for NekuLoader 3.1. Spotify uses metadata matching with public-catalog fallback for tracks and albums. Deezer tracks/albums/playlists and Apple Music songs/albums use duration-checked catalog matching. Apple playlists and full Spotify playlist fallback are unavailable. FLAC is a lossless output container and cannot increase source quality.
 
-            Packages are produced for Apple silicon and Intel Macs, Windows x64, and Linux x64. This alpha intentionally uses no project signing credentials: there is no Tauri updater signature, Apple Developer ID/notarization, or Windows Authenticode signature. Expect operating-system security prompts during testing and download updates manually from this Releases page.
-
-            Because this repository is private, installed alpha builds cannot fetch GitHub release updates without authenticated public hosting; update this alpha manually from the Releases page.
+            Packages target Apple silicon and Intel Macs, Windows x64, and Linux x64. Windows installers are unsigned. macOS signing and notarization are enabled only when the authorized Apple credentials and APPLE_SIGNING_ENABLED repository variable are configured. Verify artifact signing before publication. Application updates are manual; this release does not enable Tauri auto-updates.
 
             Use NekuLoader only for media you own or are authorized to download.
           releaseDraft: true
           prerelease: true
-          args: ${{ matrix.args }}
+          uploadUpdaterJson: false
+          args: ${{ matrix.args }} -- --locked
+      - name: Verify signed and notarized macOS application
+        if: runner.os == 'macOS' && vars.APPLE_SIGNING_ENABLED == 'true'
+        run: |
+          codesign --verify --deep --strict apps/desktop/src-tauri/target/release/bundle/macos/NekuLoader.app
+          xcrun stapler validate apps/desktop/src-tauri/target/release/bundle/macos/NekuLoader.app

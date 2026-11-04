@@ -1,0 +1,85 @@
+/*
+ * Mono — the default skin.
+ *
+ * Strictly black and white: every colour token resolves to a grey. The only
+ * non-grey light in the interface comes from glow and gradient highlights, so
+ * emphasis is carried by brightness rather than hue. Status still has to be
+ * readable, so success/warning/danger differ in weight, not colour.
+ */
+:root,
+:root[data-theme="mono"] {
+  --bg-0: #000000;
+  --bg-1: #060606;
+  --bg-2: #0c0c0c;
+  --surface: rgba(14, 14, 14, 0.84);
+  --surface-solid: #0b0b0b;
+  --surface-raised: #161616;
+  --log-bg: #030303;
+
+  --border: #3a3a3a;
+  --border-soft: rgba(255, 255, 255, 0.13);
+  --border-bright: #d8d8d8;
+
+  --text: #f2f2f2;
+  --text-muted: #a8a8a8;
+  --text-faint: #6b6b6b;
+  --title: #ffffff;
+
+  --action: #1e1e1e;
+  --action-hover: #2e2e2e;
+  --cyan: #ffffff;
+  --magenta: #ffffff;
+  --success: #ffffff;
+  --warning: #c9c9c9;
+  --danger: #ffffff;
+  --focus: #ffffff;
+
+  --star: #ffffff;
+  --star-alpha: 0.5;
+
+  --ascii-fg: #ffffff;
+  --ascii-glow: 0.5;
+  --ascii-line-height: 1.15;
+  --ascii-size: clamp(4px, 3.4cqw, 15px);
+
+  /* Log colours stay selectable, but all resolve to greys in this skin. */
+  --log-green: #e8e8e8;
+  --log-blue: #d0d0d0;
+  --log-cyan: #ffffff;
+  --log-yellow: #dcdcdc;
+  --log-orange: #c4c4c4;
+  --log-pink: #eaeaea;
+  --log-red: #f4f4f4;
+  --log-white: #ffffff;
+
+  --radius-control: 2px;
+  --radius-panel: 2px;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.8);
+
+  --mono: "SFMono-Regular", ui-monospace, "Cascadia Mono", "JetBrains Mono",
+    "DejaVu Sans Mono", "Liberation Mono", Menlo, Consolas, monospace;
+
+  --motion-scale: 1;
+  --frame-alpha: 1;
+}
+
+/*
+ * Because hue cannot carry meaning here, states are separated by border weight
+ * and background lift instead.
+ */
+:root[data-theme="mono"] .notice--error,
+:root[data-theme="mono"] .chip--failed {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="mono"] .notice--warning,
+:root[data-theme="mono"] .chip--converting {
+  border-style: dashed;
+}
+
+:root[data-theme="mono"] .chip--completed {
+  background: rgba(255, 255, 255, 0.12);
+}

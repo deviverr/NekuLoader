@@ -1,0 +1,745 @@
+/* --- mini player strip -------------------------------------------------- */
+
+.mini-player {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 68px minmax(120px, 1fr) auto minmax(180px, 1.4fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 18px;
+  border-top: 1px solid var(--border-soft);
+  background: color-mix(in srgb, var(--surface-solid) calc(var(--frame-alpha) * 96%), transparent);
+  backdrop-filter: blur(16px);
+}
+
+.mini-player__art {
+  min-width: 0;
+}
+
+.mini-player__meta {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.mini-player__meta strong {
+  overflow: hidden;
+  font-size: 11px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mini-player__meta small {
+  overflow: hidden;
+  color: var(--text-faint);
+  font-size: 9px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mini-player__transport {
+  display: flex;
+  gap: 5px;
+}
+
+.mini-player__seek {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-player__seek input {
+  width: 100%;
+}
+
+.mini-player__time,
+.player__time {
+  color: var(--text-faint);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mini-player__modes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mini-player__volume {
+  width: 74px;
+}
+
+.mode {
+  min-width: 28px;
+  height: 26px;
+  padding: 0 5px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+
+.mode--on {
+  color: var(--cyan);
+  border-color: color-mix(in srgb, var(--cyan) 45%, transparent);
+}
+
+/* --- player slide ------------------------------------------------------- */
+
+.player {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 26px;
+  align-items: start;
+  width: 100%;
+}
+
+/*
+ * The cover, blurred out to a wash behind the panel. Kept well under half
+ * opacity so text over it keeps its contrast in the monochrome skin.
+ */
+.player__glow {
+  position: absolute;
+  inset: -40px -20px auto;
+  height: 320px;
+  z-index: -1;
+  background-position: center;
+  background-size: cover;
+  filter: blur(64px) saturate(0.4);
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.player__stage {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.player__cover {
+  display: grid;
+  place-items: center;
+  width: min(300px, 100%);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-panel);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow);
+}
+
+.player__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player__title {
+  max-width: 100%;
+  overflow: hidden;
+  margin-top: 6px;
+  color: var(--title);
+  font-size: clamp(15px, 2.2vw, 21px);
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.player__artist {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.player__seek {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+/*
+ * The native range input is kept for interaction and accessibility but made
+ * invisible, so the visible bar can be drawn in the same flat style as the rest
+ * of the chrome instead of the platform's rounded thumb.
+ */
+.scrubber {
+  position: relative;
+  height: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.scrubber::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: var(--border);
+}
+
+.scrubber__fill {
+  position: absolute;
+  left: 0;
+  height: 2px;
+  background: var(--text);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--text) 60%, transparent);
+}
+
+.scrubber__fill::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text);
+  transform: translateY(-50%);
+}
+
+.scrubber input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.player__transport {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.transport-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-soft);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.transport-button:hover {
+  color: var(--text);
+  border-color: var(--border-bright);
+}
+
+/* The play button is the one filled control on the screen. */
+.transport-button--play {
+  width: 46px;
+  height: 46px;
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg-0);
+  font-size: 14px;
+}
+
+.transport-button--play:hover {
+  color: var(--bg-0);
+  filter: brightness(0.88);
+}
+
+.player__volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(220px, 100%);
+  margin-top: 2px;
+  color: var(--text-faint);
+  font-size: 10px;
+}
+
+.player__volume input {
+  flex: 1;
+}
+
+/* --- queue -------------------------------------------------------------- */
+
+.player__queue {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.player__queue-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.play-queue {
+  display: grid;
+  gap: 2px;
+  max-height: 52vh;
+  overflow-y: auto;
+  scrollbar-color: var(--border) transparent;
+}
+
+.queue-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+}
+
+.queue-row:hover {
+  border-color: var(--border-soft);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.queue-row--active {
+  border-color: var(--border-soft);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.queue-row__main {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 5px 6px;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.queue-row__thumb {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: 2px;
+  background: var(--surface-raised);
+  color: var(--text-faint);
+  font-size: 12px;
+}
+
+.queue-row__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.queue-row__text {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.queue-row__text strong {
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.queue-row__text small {
+  overflow: hidden;
+  color: var(--text-faint);
+  font-size: 9px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.queue-row__remove {
+  width: 26px;
+  height: 26px;
+  margin-right: 4px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 10px;
+  opacity: 0;
+}
+
+.queue-row:hover .queue-row__remove {
+  opacity: 1;
+}
+
+.queue-row__remove:hover {
+  color: var(--text);
+}
+
+/* Sits over the thumbnail on hover, marking the row without adding a column. */
+.queue-row__index {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  color: var(--text);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  transform: translateY(-50%);
+  opacity: 0;
+}
+
+.queue-row--active .queue-row__index {
+  opacity: 1;
+  text-shadow: 0 0 6px var(--bg-0);
+}
+
+.player-empty {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 12px;
+}
+
+.player-empty .ascii {
+  max-width: 380px;
+}
+
+@media (max-width: 1040px) {
+  .mini-player {
+    grid-template-columns: minmax(120px, 1fr) auto minmax(140px, 1fr);
+    gap: 10px;
+  }
+  .mini-player__art,
+  .mini-player__modes {
+    display: none;
+  }
+  .player {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- my music: albums with covers ---------------------------------------- */
+
+.player__tabs {
+  margin-bottom: 4px;
+}
+
+.player__stage--empty {
+  align-content: start;
+  gap: 14px;
+}
+
+.player__stage--empty .empty-state {
+  min-height: 0;
+  padding: 6px 0 0;
+}
+
+.player__start {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.music-browser {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.album-list {
+  display: grid;
+  gap: 6px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.album {
+  border: 2px solid var(--border-soft);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+
+.album--current {
+  border-color: var(--border-bright);
+}
+
+.album__head {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px 6px 6px;
+}
+
+.album__cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 2px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-faint);
+  overflow: hidden;
+}
+
+.album__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: auto;
+}
+
+.album__play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg-0) 55%, transparent);
+  color: var(--ascii-fg);
+  font-size: 18px;
+  opacity: 0;
+  transition: opacity 0.1s steps(2);
+}
+
+.album__cover:hover .album__play,
+.album__cover:focus-visible .album__play {
+  opacity: 1;
+}
+
+.album__text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.album__text strong {
+  overflow: hidden;
+  font-family: var(--pixel-font);
+  font-size: 15px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.album__text small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.album__chevron {
+  color: var(--text-faint);
+}
+
+.album__tracks {
+  display: grid;
+  margin: 0;
+  padding: 0 6px 6px;
+  list-style: none;
+}
+
+.album-track {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: left;
+}
+
+.album-track:hover {
+  background: color-mix(in srgb, var(--ascii-fg) 8%, transparent);
+  color: var(--text);
+}
+
+.album-track--active {
+  background: color-mix(in srgb, var(--ascii-fg) 14%, transparent);
+  color: var(--text);
+}
+
+.album-track__index,
+.album-track__time,
+.album-track__meta {
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.album-track__meta {
+  font-family: var(--pixel-font);
+  font-size: 10px;
+}
+
+.album-track__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- pixel deck: sleeve + spinning record -------------------------------- */
+
+.deck {
+  position: relative;
+  width: min(300px, 70vw);
+  aspect-ratio: 1.32;
+  margin-bottom: 4px;
+}
+
+.deck__vinyl {
+  position: absolute;
+  top: 4%;
+  left: 4%;
+  width: 72%;
+  aspect-ratio: 1;
+  transition: transform 0.5s steps(6);
+}
+
+/* The record slides out of the sleeve while playing. */
+.deck__vinyl {
+  transform: translateX(16%);
+}
+
+.deck--playing .deck__vinyl {
+  transform: translateX(40%);
+}
+
+.pixel-vinyl {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.deck__sleeve {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 76%;
+  aspect-ratio: 1;
+  border: 3px solid var(--border-bright);
+  background: var(--surface-raised);
+  box-shadow: 6px 6px 0 0 color-mix(in srgb, var(--bg-0) 75%, transparent);
+  overflow: hidden;
+}
+
+.deck__sleeve img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deck__placeholder {
+  color: var(--ascii-fg);
+  font-family: var(--pixel-font);
+  font-size: 64px;
+  opacity: 0.8;
+}
+
+.pixel-eq {
+  width: min(284px, 70vw);
+  height: 40px;
+  image-rendering: pixelated;
+  opacity: 0.85;
+}
+
+.pixel-icon {
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* Segmented seek bar with a square playhead. */
+.scrubber--pixel {
+  height: 14px;
+  border: 2px solid var(--border);
+  background: color-mix(in srgb, var(--bg-0) 70%, transparent);
+  border-radius: 0;
+}
+
+.scrubber--pixel .scrubber__fill {
+  height: 100%;
+  border-radius: 0;
+  background: repeating-linear-gradient(90deg, var(--ascii-fg) 0 6px, transparent 6px 8px);
+}
+
+.scrubber--pixel .scrubber__head {
+  position: absolute;
+  top: -5px;
+  width: 8px;
+  height: 20px;
+  margin-left: -4px;
+  background: var(--ascii-fg);
+  box-shadow: 0 0 0 2px var(--bg-0);
+  pointer-events: none;
+}
+
+.player .transport-button,
+.player .mode {
+  display: grid;
+  place-items: center;
+  border-radius: 0 !important;
+  border-width: 2px;
+  clip-path: var(--pixel-clip);
+}
+
+.player .transport-button--play {
+  background: var(--ascii-fg);
+  color: var(--bg-0);
+}
+
+.scrubber--pixel::before {
+  display: none;
+}
+
+.scrubber--pixel .scrubber__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.scrubber--pixel .scrubber__fill {
+  box-shadow: none;
+}
+
+.scrubber--pixel .scrubber__fill::after {
+  display: none;
+}
+
+/* Notices sit above both columns instead of taking a grid cell. */
+.player > .notice {
+  grid-column: 1 / -1;
+}

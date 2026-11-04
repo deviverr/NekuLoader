@@ -3,7 +3,9 @@ use std::{collections::HashMap, fs, path::PathBuf};
 use chrono::{DateTime, Utc};
 use rusqlite::{Connection, OptionalExtension, params};
 
-use crate::models::{AppSettings, DownloadJob, HistoryEntry, JobStatus};
+use crate::models::{
+    AppSettings, CustomThemeColors, DownloadJob, HistoryEntry, JobStatus, PlaybackState,
+};
 
 #[derive(Debug, Clone)]
 pub struct Database {
@@ -57,6 +59,16 @@ impl Database {
                     job_data TEXT,
                     created_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS playback_state (
+                    id INTEGER PRIMARY KEY CHECK (id = 1),
+                    data TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS custom_themes (
+                    name TEXT PRIMARY KEY,
+                    data TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
                 CREATE INDEX IF NOT EXISTS idx_jobs_updated ON jobs(updated_at DESC);
                 CREATE INDEX IF NOT EXISTS idx_history_created ON history(created_at DESC);
                 ",
@@ -87,6 +99,70 @@ impl Database {
                  ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at",
                 params![data, Utc::now().to_rfc3339()],
             )
+            .map_err(|error| error.to_string())?;
+        Ok(())
+    }
+
+    pub fn load_playback_state(&self) -> Result<PlaybackState, String> {
+        let connection = self.connect()?;
+        let data: Option<String> = connection
+            .query_row("SELECT data FROM playback_state WHERE id = 1", [], |row| {
+                row.get(0)
+            })
+            .optional()
+            .map_err(|error| error.to_string())?;
+        // A queue that cannot be parsed is not worth failing startup over.
+        Ok(data
+            .and_then(|json| serde_json::from_str(&json).ok())
+            .unwrap_or_default())
+    }
+
+    pub fn save_playback_state(&self, state: &PlaybackState) -> Result<(), String> {
+        let data = serde_json::to_string(state).map_err(|error| error.to_string())?;
+        self.connect()?
+            .execute(
+                "INSERT INTO playback_state(id, data, updated_at) VALUES(1, ?1, ?2)
+                 ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at",
+                params![data, Utc::now().to_rfc3339()],
+            )
+            .map_err(|error| error.to_string())?;
+        Ok(())
+    }
+
+    pub fn save_custom_theme(&self, theme: &CustomThemeColors) -> Result<(), String> {
+        let data = serde_json::to_string(theme).map_err(|error| error.to_string())?;
+        self.connect()?
+            .execute(
+                "INSERT INTO custom_themes(name, data, updated_at) VALUES(?1, ?2, ?3)
+                 ON CONFLICT(name) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at",
+                params![theme.name, data, Utc::now().to_rfc3339()],
+            )
+            .map_err(|error| error.to_string())?;
+        Ok(())
+    }
+
+    pub fn list_custom_themes(&self) -> Result<Vec<CustomThemeColors>, String> {
+        let connection = self.connect()?;
+        let mut statement = connection
+            .prepare("SELECT data FROM custom_themes ORDER BY name ASC")
+            .map_err(|error| error.to_string())?;
+        let values = statement
+            .query_map([], |row| row.get::<_, String>(0))
+            .map_err(|error| error.to_string())?;
+        let mut themes = Vec::new();
+        for value in values {
+            let json = value.map_err(|error| error.to_string())?;
+            // Skip individually corrupt rows rather than losing the whole list.
+            if let Ok(theme) = serde_json::from_str(&json) {
+                themes.push(theme);
+            }
+        }
+        Ok(themes)
+    }
+
+    pub fn delete_custom_theme(&self, name: &str) -> Result<(), String> {
+        self.connect()?
+            .execute("DELETE FROM custom_themes WHERE name = ?1", params![name])
             .map_err(|error| error.to_string())?;
         Ok(())
     }

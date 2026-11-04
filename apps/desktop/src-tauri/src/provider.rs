@@ -75,9 +75,71 @@ pub fn detect(raw_url: &str) -> Result<SourceDetection, String> {
     })
 }
 
+/// Share hosts that only redirect to a canonical link. Their path says nothing
+/// about track vs. album, so they are expanded before detection.
+const SHORT_LINK_HOSTS: &[&str] = &[
+    "spotify.link",
+    "spotify.app.link",
+    "deezer.page.link",
+    "link.deezer.com",
+    "on.soundcloud.com",
+];
+
+pub fn is_short_link(host: &str) -> bool {
+    SHORT_LINK_HOSTS.contains(&host)
+}
+
+/// [`detect`], but short share links are first followed to their canonical
+/// URL. Every redirect hop is re-validated, so a share link cannot be used to
+/// reach a private-network address.
+pub async fn detect_resolved(raw_url: &str) -> Result<SourceDetection, String> {
+    let first = detect(raw_url)?;
+    if !is_short_link(&first.host) {
+        return Ok(first);
+    }
+    let client = reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::custom(|attempt| {
+            if attempt.previous().len() >= 6 {
+                return attempt.error("too many redirects");
+            }
+            match detect(attempt.url().as_str()) {
+                Ok(detection) if !is_short_link(&detection.host) && detection.supported => {
+                    // Reached a canonical provider URL; no need to load it.
+                    attempt.stop()
+                }
+                Ok(_) => attempt.follow(),
+                Err(error) => attempt.error(error),
+            }
+        }))
+        .timeout(std::time::Duration::from_secs(15))
+        .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15")
+        .build()
+        .map_err(|error| error.to_string())?;
+    let response = client
+        .get(&first.normalized_url)
+        .send()
+        .await
+        .map_err(|error| format!("Could not expand the short link: {error}"))?;
+    let target = response
+        .headers()
+        .get(reqwest::header::LOCATION)
+        .and_then(|value| value.to_str().ok())
+        .and_then(|location| response.url().join(location).ok())
+        .unwrap_or_else(|| response.url().clone());
+    let resolved = detect(target.as_str())?;
+    if is_short_link(&resolved.host) || resolved.media_kind == MediaKind::Unknown {
+        return Err("This share link could not be expanded. Open it in a browser and copy the full link instead.".into());
+    }
+    Ok(resolved)
+}
+
 fn youtube_kind(path: &str, url: &Url) -> MediaKind {
     if path == "/playlist" || path.starts_with("/playlist/") {
-        MediaKind::Playlist
+        // YouTube Music album playlists all carry the OLAK5uy_ id prefix.
+        let album = url
+            .query_pairs()
+            .any(|(key, value)| key == "list" && value.starts_with("OLAK5uy_"));
+        if album { MediaKind::Album } else { MediaKind::Playlist }
     } else if path.starts_with("/browse/") {
         MediaKind::Album
     } else if path == "/watch" || url.host_str() == Some("youtu.be") || path.starts_with("/shorts/")
@@ -164,6 +226,14 @@ mod tests {
         let result = detect("https://music.youtube.com/watch?v=abc&list=album").unwrap();
         assert_eq!(result.provider, Provider::YouTubeMusic);
         assert_eq!(result.media_kind, MediaKind::Track);
+    }
+
+    #[test]
+    fn detects_youtube_music_albums() {
+        let album = detect("https://music.youtube.com/playlist?list=OLAK5uy_abc").unwrap();
+        assert_eq!(album.media_kind, MediaKind::Album);
+        let playlist = detect("https://music.youtube.com/playlist?list=PLabc").unwrap();
+        assert_eq!(playlist.media_kind, MediaKind::Playlist);
     }
 
     #[test]

@@ -1,12 +1,13 @@
 name: Desktop CI
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - "apps/desktop/**"
       - ".github/workflows/desktop-ci.yml"
   push:
-    branches: [main]
+    branches: [main, "release/**"]
     paths:
       - "apps/desktop/**"
       - ".github/workflows/desktop-ci.yml"
@@ -37,9 +38,13 @@ jobs:
       matrix:
         include:
           - os: macos-14
+            bundles: app,dmg
           - os: macos-15-intel
+            bundles: app,dmg
           - os: windows-2022
+            bundles: nsis,msi
           - os: ubuntu-22.04
+            bundles: appimage,deb,rpm
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -54,5 +59,32 @@ jobs:
       - uses: dtolnay/rust-toolchain@4cda84d5c5c54efe2404f9d843567869ab1699d4
         with:
           toolchain: 1.95.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - name: Prepare frontend assets for the native tests
+        run: npm ci && npm run build
       - name: Test Rust backend
         run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Build candidate installers
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/release/')
+        env:
+          CARGO_PROFILE_RELEASE_STRIP: none
+          CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_STRIP: none
+        run: npm run tauri build -- --bundles ${{ matrix.bundles }} -- --locked
+      - name: Keep candidate installers
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/release/')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: NekuLoader-${{ matrix.os }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/**/*.dmg
+            apps/desktop/src-tauri/target/release/bundle/**/*.exe
+            apps/desktop/src-tauri/target/release/bundle/**/*.msi
+            apps/desktop/src-tauri/target/release/bundle/**/*.AppImage
+            apps/desktop/src-tauri/target/release/bundle/**/*.deb
+            apps/desktop/src-tauri/target/release/bundle/**/*.rpm

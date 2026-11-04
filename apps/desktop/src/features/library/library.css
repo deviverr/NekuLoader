@@ -1,0 +1,128 @@
+.library-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.track-list {
+  display: grid;
+  gap: 2px;
+}
+
+.track {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 52px 54px 66px auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+}
+
+.track:hover {
+  border-color: var(--border-soft);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.track--active {
+  border-color: color-mix(in srgb, var(--cyan) 40%, transparent);
+  background: color-mix(in srgb, var(--action) 24%, transparent);
+}
+
+/* The cover doubles as the play button: hovering dims it and shows the glyph. */
+.track__play {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: 2px;
+  background: var(--surface-raised);
+  color: var(--text-faint);
+}
+
+.track__thumb {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 12px;
+}
+
+.track__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.track__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--text);
+  font-size: 11px;
+  opacity: 0;
+}
+
+.track:hover .track__overlay,
+.track--active .track__overlay {
+  opacity: 1;
+}
+
+.track__meta {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.track__meta strong {
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.track__meta small {
+  overflow: hidden;
+  color: var(--text-faint);
+  font-size: 9px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.track__badge {
+  padding: 2px 5px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  color: var(--text-faint);
+  font-size: 8px;
+  text-align: center;
+}
+
+.track__duration,
+.track__size {
+  color: var(--text-faint);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+@media (max-width: 1040px) {
+  .library-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .track {
+    grid-template-columns: 34px minmax(0, 1fr) 54px auto;
+  }
+  .track__badge,
+  .track__size {
+    display: none;
+  }
+}

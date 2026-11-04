@@ -71,14 +71,46 @@ enum FfmpegPackage {
     },
 }
 
+/// Startup variant of [`inspect`]: reports what is present without running
+/// anything, so the window does not wait on slow `--version` calls (SpotDL
+/// alone takes ~10 s). Settings → Components runs the full check.
+pub fn inspect_quick(app_data: &Path) -> Vec<ToolInfo> {
+    let tools = discover(app_data);
+    let entry = |name: &str, required: bool, path: Option<&Path>| ToolInfo {
+        name: name.into(),
+        required,
+        installed: path.is_some(),
+        path: path.map(|value| value.to_string_lossy().into_owned()),
+        version: None,
+        status: match (path.is_some(), required) {
+            (true, _) => "Found".into(),
+            (false, true) => "Required component is missing".into(),
+            (false, false) => "Optional component is not installed".into(),
+        },
+    };
+    vec![
+        entry("yt-dlp", true, tools.yt_dlp.as_deref()),
+        entry("FFmpeg", true, tools.ffmpeg.as_deref()),
+        entry("FFprobe", false, tools.ffprobe.as_deref()),
+        entry("SpotDL", false, tools.spotdl.as_deref()),
+        entry(
+            "JavaScript runtime",
+            false,
+            tools.js_runtime.as_ref().map(|(_, path)| path.as_path()),
+        ),
+    ]
+}
+
 pub async fn inspect(app_data: &Path) -> Vec<ToolInfo> {
     let tools = discover(app_data);
     let mut result = Vec::new();
-    result.push(tool_info("yt-dlp", true, tools.yt_dlp.as_deref(), "--version").await);
-    result.push(tool_info("FFmpeg", true, tools.ffmpeg.as_deref(), "-version").await);
-    result.push(tool_info("FFprobe", false, tools.ffprobe.as_deref(), "-version").await);
-
-    let mut spotdl = tool_info("SpotDL", false, tools.spotdl.as_deref(), "--version").await;
+    let (yt_dlp, ffmpeg, ffprobe, mut spotdl) = tokio::join!(
+        tool_info("yt-dlp", true, tools.yt_dlp.as_deref(), "--version"),
+        tool_info("FFmpeg", true, tools.ffmpeg.as_deref(), "-version"),
+        tool_info("FFprobe", false, tools.ffprobe.as_deref(), "-version"),
+        tool_info("SpotDL", false, tools.spotdl.as_deref(), "--version"),
+    );
+    result.extend([yt_dlp, ffmpeg, ffprobe]);
     if !spotdl.installed && spotdl_asset_suffix_for(env::consts::OS, env::consts::ARCH).is_none() {
         spotdl.status = format!(
             "Optional component; managed SpotDL is not published for {}/{} (manual installs are detected)",
@@ -90,17 +122,17 @@ pub async fn inspect(app_data: &Path) -> Vec<ToolInfo> {
 
     match tools.js_runtime {
         Some((name, path)) => {
-            let mut info = tool_info(&name, true, Some(&path), "--version").await;
+            let mut info = tool_info(&name, false, Some(&path), "--version").await;
             info.name = "JavaScript runtime".into();
             result.push(info);
         }
         None => result.push(ToolInfo {
             name: "JavaScript runtime".into(),
-            required: true,
+            required: false,
             installed: false,
             path: None,
             version: None,
-            status: "Deno or Node is required for reliable YouTube extraction".into(),
+            status: "Deno or Node is recommended for reliable YouTube extraction".into(),
         }),
     }
     result
@@ -126,7 +158,7 @@ pub async fn install_or_update(app_data: &Path) -> Result<Vec<ToolInfo>, String>
     )
     .await?;
 
-    install_deno(&client, &staging_dir, &bin_dir).await?;
+    let runtime_warning = install_deno(&client, &staging_dir, &bin_dir).await.err();
     if !has_healthy_external_ffmpeg_pair(app_data).await {
         install_ffmpeg(&client, &staging_dir, &bin_dir).await?;
     }
@@ -138,6 +170,11 @@ pub async fn install_or_update(app_data: &Path) -> Result<Vec<ToolInfo>, String>
     };
 
     let mut status = inspect(app_data).await;
+    if let Some(error) = runtime_warning
+        && let Some(tool) = status.iter_mut().find(|tool| tool.name == "JavaScript runtime")
+    {
+        tool.status = format!("Recommended runtime update was skipped: {error}");
+    }
     if let Some(error) = spotdl_warning
         && let Some(tool) = status.iter_mut().find(|tool| tool.name == "SpotDL")
     {
@@ -176,7 +213,7 @@ pub fn discover(app_data: &Path) -> Toolchain {
     }
 }
 
-fn find_executable(name: &str, override_name: &str, app_data: &Path) -> Option<PathBuf> {
+pub(crate) fn find_executable(name: &str, override_name: &str, app_data: &Path) -> Option<PathBuf> {
     if let Some(path) = env::var_os(override_name)
         .map(PathBuf::from)
         .filter(|path| runnable(path))
@@ -1015,7 +1052,9 @@ async fn tool_info(name: &str, required: bool, path: Option<&Path>, version_arg:
         .arg(version_arg)
         .stdin(Stdio::null())
         .kill_on_drop(true);
-    let output = timeout(Duration::from_secs(10), command.output()).await;
+    // SpotDL ships as a one-file bundle that unpacks itself on every start,
+    // which takes about 10 s on macOS; a shorter limit reports it as broken.
+    let output = timeout(Duration::from_secs(45), command.output()).await;
     match output {
         Ok(Ok(output)) if output.status.success() => {
             let text = if output.stdout.is_empty() {
@@ -1257,5 +1296,19 @@ mod tests {
                 .all(|tool| tool.installed),
             "required tool status: {status:#?}"
         );
+    }
+
+    /// Runs the real installer against `NEKULOADER_TEST_APP_DATA`. Network.
+    #[tokio::test]
+    #[ignore = "network; installs real components"]
+    async fn installs_components_into_app_data() {
+        let Some(dir) = std::env::var_os("NEKULOADER_TEST_APP_DATA") else {
+            return;
+        };
+        let tools = install_or_update(Path::new(&dir)).await.unwrap();
+        for tool in &tools {
+            println!("{} installed={} {:?} {}", tool.name, tool.installed, tool.version, tool.status);
+        }
+        assert!(tools.iter().filter(|tool| tool.required).all(|tool| tool.installed));
     }
 }
