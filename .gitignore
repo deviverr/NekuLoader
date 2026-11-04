@@ -16,3 +16,4 @@ summary.txt
 *.so
 __pycache__/
 *.pyc
+.env

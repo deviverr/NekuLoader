@@ -1,29 +1,26 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { open } from "@tauri-apps/plugin-dialog";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import type {
+  AndroidDevice,
   AppSettings,
   BootstrapResponse,
+  CustomThemeColors,
   DownloadJob,
   DownloadRequest,
+  LibraryTrack,
   MediaKind,
   MediaPreview,
+  PlaybackState,
   Provider,
   SourceDetection,
   ToolInfo,
 } from "../types";
 
-export interface LibraryTrack {
-  id: string;
-  title: string;
-  artist: string;
-  album: string;
-  path: string;
-  format: string;
-  sizeBytes: number;
-  modifiedAt: string;
-}
+export type { LibraryTrack } from "../types";
 
 export interface ProviderCapability {
   canDownload: boolean;
@@ -56,6 +53,26 @@ const browserDefaults: BootstrapResponse = {
     theme: "Classic Legacy",
     concurrentDownloads: 1,
     checkToolUpdates: true,
+    themeMode: "mono",
+    catMode: false,
+    logTextColor: "green",
+    backgroundImagePath: null,
+    backgroundImageRecent: [],
+    snowSpeed: 1,
+    snowBoldness: 1,
+    snowTransparency: 0.55,
+    starAngle: 180,
+
+    frameTransparency: 1,
+    musicFolders: [],
+    scanSystemMusic: false,
+    scanEverything: false,
+    cookieMode: "none",
+    cookieBrowser: "chrome",
+    cookieFile: null,
+    customFolderIcons: false,
+    parseMode: "automatic",
+    trayNotifications: true,
   },
   jobs: [],
   history: [],
@@ -66,6 +83,16 @@ const browserDefaults: BootstrapResponse = {
   ],
   legacyImported: false,
   version: "3.2.0-alpha.1",
+  isWindows: false,
+  playback: {
+    queueTrackIds: [],
+    currentIndex: null,
+    positionSeconds: 0,
+    shuffle: false,
+    repeatMode: "off",
+    volume: 0.8,
+  },
+  customThemes: [],
 };
 
 export async function bootstrap(): Promise<BootstrapResponse> {
@@ -90,7 +117,7 @@ export async function inspectLink(url: string): Promise<MediaPreview> {
     mediaKind: detection.mediaKind,
     warning: providerCapability(detection.provider).canDownload
       ? "Run the installed desktop app to resolve live metadata."
-      : "This alpha recognizes the link, but its metadata-matching download workflow is not implemented yet.",
+      : "This source is not supported.",
   };
 }
 
@@ -125,7 +152,31 @@ export async function refreshTools(): Promise<ToolInfo[]> {
 }
 
 export async function scanLibrary(): Promise<LibraryTrack[]> {
-  return isTauri() ? invoke("scan_library") : [];
+  if (isTauri()) return invoke("scan_library");
+  return import.meta.env.DEV ? demoLibrary() : [];
+}
+
+/** A few fake tracks so the browser-only UI preview has something to show. */
+function demoLibrary(): LibraryTrack[] {
+  const now = new Date().toISOString();
+  const album = (artist: string, title: string, names: string[], format: string) =>
+    names.map((name, index) => ({
+      id: `/demo/${title}/${name}.${format.toLowerCase()}`,
+      path: `/demo/${title}/${name}.${format.toLowerCase()}`,
+      title: name,
+      artist,
+      album: title,
+      format,
+      sizeBytes: 9_000_000,
+      modifiedAt: now,
+      durationSeconds: 180 + index * 17,
+      trackNumber: index + 1,
+      hasArtwork: false,
+    }));
+  return [
+    ...album("Forss", "Soulhack", ["City Ports", "Soulhack", "Funk for Nerds", "Flickermood"], "MP3"),
+    ...album("Demo Artist", "Pixel Nights", ["Starfall", "Neku Runs", "Cassette"], "FLAC"),
+  ];
 }
 
 export async function installComponents(): Promise<ToolInfo[]> {
@@ -148,6 +199,159 @@ export async function reveal(path: string): Promise<void> {
 export async function onJobUpdate(callback: (job: DownloadJob) => void): Promise<UnlistenFn> {
   if (!isTauri()) return () => undefined;
   return listen<{ job: DownloadJob }>("job:update", ({ payload }) => callback(payload.job));
+}
+
+/** Raw downloader output for the queue terminal panel. */
+export async function onJobLog(
+  callback: (jobId: string, lines: string[]) => void,
+): Promise<UnlistenFn> {
+  if (!isTauri()) return () => undefined;
+  return listen<{ jobId: string; lines: string[] }>("job:log", ({ payload }) =>
+    callback(payload.jobId, payload.lines),
+  );
+}
+
+// --- player ---------------------------------------------------------------
+
+export async function savePlaybackState(playback: PlaybackState): Promise<void> {
+  if (isTauri()) await invoke("save_playback_state", { playback });
+}
+
+export async function loadPlaybackState(): Promise<PlaybackState> {
+  return isTauri() ? invoke("load_playback_state") : browserDefaults.playback;
+}
+
+/**
+ * Turns a library path into something `<audio src>` can load. The Rust side
+ * authorizes the path first; `convertFileSrc` then maps it onto the asset
+ * protocol. Returns null in the browser preview, which has no file access.
+ */
+export async function playableUrl(path: string): Promise<string | null> {
+  if (!isTauri()) return null;
+  const resolved = await invoke<string>("resolve_playable_url", { path });
+  return convertFileSrc(resolved);
+}
+
+export async function trackArtworkUrl(path: string): Promise<string | null> {
+  if (!isTauri()) return null;
+  const cached = await invoke<string | null>("get_track_artwork", { path });
+  return cached ? convertFileSrc(cached) : null;
+}
+
+// --- themes ---------------------------------------------------------------
+
+export async function saveCustomTheme(theme: CustomThemeColors): Promise<void> {
+  if (isTauri()) await invoke("save_custom_theme", { theme });
+}
+
+export async function listCustomThemes(): Promise<CustomThemeColors[]> {
+  return isTauri() ? invoke("list_custom_themes") : [];
+}
+
+export async function deleteCustomTheme(name: string): Promise<void> {
+  if (isTauri()) await invoke("delete_custom_theme", { name });
+}
+
+// --- devices --------------------------------------------------------------
+
+export async function listAndroidDevices(): Promise<AndroidDevice[]> {
+  return isTauri() ? invoke("list_android_devices") : [];
+}
+
+export async function pushToAndroid(
+  deviceId: string,
+  files: string[],
+  destination: string,
+): Promise<void> {
+  if (!isTauri()) throw new Error("Device transfer needs the installed desktop app.");
+  await invoke("push_to_android", { deviceId, files, destination });
+}
+
+export async function onTransferProgress(
+  callback: (event: { deviceId: string; file: string; completed: number; total: number; error?: string }) => void,
+): Promise<UnlistenFn> {
+  if (!isTauri()) return () => undefined;
+  return listen<{ deviceId: string; file: string; completed: number; total: number; error?: string }>(
+    "device:transfer",
+    ({ payload }) => callback(payload),
+  );
+}
+
+// --- artwork repair ----------------------------------------------------
+
+/** Re-fetches square covers for tracks from the source page in their tags. */
+export async function repairArtwork(files: string[]): Promise<number> {
+  if (!isTauri()) throw new Error("Cover repair needs the installed desktop app.");
+  return invoke("repair_artwork", { files });
+}
+
+export async function onArtworkRepair(
+  callback: (event: { completed: number; total: number; fixed: number; file: string }) => void,
+): Promise<UnlistenFn> {
+  if (!isTauri()) return () => undefined;
+  return listen<{ completed: number; total: number; fixed: number; file: string }>("artwork:repair", ({ payload }) =>
+    callback(payload),
+  );
+}
+
+// --- Wi-Fi transfer -------------------------------------------------------
+
+export interface WifiShare {
+  url: string;
+  qrSvg: string;
+  fileCount: number;
+  totalBytes: number;
+  expiresAt: string;
+}
+
+export async function startWifiShare(files: string[]): Promise<WifiShare> {
+  if (!isTauri()) throw new Error("Wi-Fi transfer needs the installed desktop app.");
+  return invoke("start_wifi_share", { files });
+}
+
+export async function stopWifiShare(): Promise<void> {
+  if (isTauri()) await invoke("stop_wifi_share");
+}
+
+export async function currentWifiShare(): Promise<WifiShare | null> {
+  return isTauri() ? invoke("current_wifi_share") : null;
+}
+
+/**
+ * Reads the clipboard natively. The webview's own clipboard API makes macOS
+ * show a "Paste" confirmation bubble on every press.
+ */
+export async function readClipboard(): Promise<string> {
+  if (isTauri()) return (await readText()) ?? "";
+  return navigator.clipboard.readText();
+}
+
+/** Picks an exported cookies.txt for the downloader. */
+export async function chooseCookieFile(): Promise<string | null> {
+  if (!isTauri()) return null;
+  const result = await open({
+    multiple: false,
+    title: "Choose cookies.txt",
+    filters: [{ name: "Cookies", extensions: ["txt"] }],
+  });
+  return typeof result === "string" ? result : null;
+}
+
+/** Picks a background image or GIF for the theme editor. */
+export async function chooseImage(): Promise<string | null> {
+  if (!isTauri()) return null;
+  const result = await open({
+    multiple: false,
+    title: "Choose a background image",
+    filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp"] }],
+  });
+  return typeof result === "string" ? result : null;
+}
+
+/** Maps a user-chosen background image path onto the asset protocol. */
+export function backgroundUrl(path: string | null): string | undefined {
+  if (!path || !isTauri()) return undefined;
+  return convertFileSrc(path);
 }
 
 function detectInBrowser(raw: string): SourceDetection {
@@ -203,14 +407,14 @@ export function providerCapability(provider: Provider): ProviderCapability {
     return {
       canDownload: true,
       label: "Metadata matching",
-      description: "Uses SpotDL to match Spotify metadata to an accessible audio source. The matched source and quality can differ from Spotify's catalog stream.",
+      description: "Matches Spotify metadata to accessible audio using SpotDL, with public-catalog fallback for tracks and albums. The matched source and quality can differ from Spotify's catalog stream.",
     };
   }
   if (["deezer", "appleMusic"].includes(provider)) {
     return {
-      canDownload: false,
-      label: "Recognition only",
-      description: "The link is recognized, but metadata matching and audio download are not implemented in this alpha.",
+      canDownload: true,
+      label: "Metadata matching",
+      description: "Reads the track list from the public catalog, then matches each track by artist, title, and length to an accessible audio source and writes the catalog tags.",
     };
   }
   return {
@@ -218,4 +422,23 @@ export function providerCapability(provider: Provider): ProviderCapability {
     label: "Unsupported",
     description: "This source is not supported.",
   };
+}
+
+export async function copyText(text: string): Promise<void> {
+  if (isTauri()) return writeText(text);
+  return navigator.clipboard.writeText(text);
+}
+
+
+/** Request OS permission only from the user's notification-setting action. */
+export async function requestNotifications(): Promise<boolean> {
+  if (!isTauri()) return false;
+  const { isPermissionGranted, requestPermission } = await import("@tauri-apps/plugin-notification");
+  return (await isPermissionGranted()) || (await requestPermission()) === "granted";
+}
+
+export async function notifyDownload(body: string): Promise<void> {
+  if (!isTauri()) return;
+  const { isPermissionGranted, sendNotification } = await import("@tauri-apps/plugin-notification");
+  if (await isPermissionGranted()) sendNotification({ title: "NekuLoader", body });
 }

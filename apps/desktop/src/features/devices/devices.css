@@ -1,0 +1,122 @@
+.device-list {
+  display: grid;
+  gap: 6px;
+}
+
+.device {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+}
+
+.device--active {
+  border-color: var(--border-bright);
+  background: color-mix(in srgb, var(--action) 22%, transparent);
+}
+
+.device strong {
+  display: block;
+  font-size: 11px;
+}
+
+.device small {
+  color: var(--text-faint);
+  font-size: 9px;
+}
+
+.transfer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.transfer-actions .button--primary {
+  margin-left: auto;
+}
+
+.transfer-progress {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.transfer-list {
+  display: grid;
+  gap: 2px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.transfer-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 6px;
+  border-radius: var(--radius-control);
+  font-size: 10px;
+}
+
+.transfer-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.transfer-item > span:first-of-type {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ios-steps {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.ios-steps strong {
+  color: var(--text);
+}
+
+.wifi-share {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.wifi-share__qr {
+  width: 220px;
+  height: 220px;
+  background: #fff;
+  border-radius: var(--radius-control);
+  image-rendering: pixelated;
+}
+
+.wifi-share__url {
+  display: block;
+  margin: 6px 0 10px;
+  word-break: break-all;
+  user-select: all;
+}
+
+@media (max-width: 720px) {
+  .wifi-share {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

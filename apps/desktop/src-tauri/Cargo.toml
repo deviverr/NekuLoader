@@ -1,6 +1,6 @@
 [package]
 name = "nekuloader-desktop"
-version = "3.2.0-alpha.1"
+version = "3.2.0-alpha.2"
 description = "NekuLoader native cross-platform music downloader"
 authors = ["deviverr"]
 edition = "2024"
@@ -18,15 +18,20 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+# `protocol-asset` backs the assetProtocol block in tauri.conf.json, which is
+# how the player's <audio> element and cached cover art reach local files.
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-clipboard-manager = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-log = "2"
+log = "0.4"
 tauri-plugin-opener = "2"
 tauri-plugin-single-instance = "2"
 tauri-plugin-window-state = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 chrono = { version = "0.4", features = ["serde"] }
+lofty = "0.22"
 regex = "1"
 reqwest = { version = "0.13.4", default-features = false, features = ["rustls"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
@@ -39,3 +44,8 @@ url = "2"
 uuid = { version = "1", features = ["serde", "v4"] }
 xz2 = "0.1"
 zip = { version = "4", default-features = false, features = ["deflate"] }
+qrcode = { version = "0.14", default-features = false, features = ["svg"] }
+tauri-plugin-notification = "2"
+
+[dev-dependencies]
+tauri = { version = "2", features = ["test"] }

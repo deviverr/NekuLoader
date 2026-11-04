@@ -1,0 +1,121 @@
+/*
+ * ASCII art rendering.
+ *
+ * The wrapper is a CSS container and the <pre> is sized in `cqw`, so a piece
+ * authored at a fixed column count scales with its box instead of needing a
+ * breakpoint per placement. Line height is pulled well under 1 so character
+ * cells come out near-square — without it, block-glyph art renders stretched
+ * to roughly double height.
+ */
+.ascii {
+  container-type: inline-size;
+  /* Art must never push a sibling around while a frame swaps. */
+  contain: layout paint;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: var(--ascii-fg);
+}
+
+.ascii pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--ascii-size);
+  line-height: var(--ascii-line-height);
+  white-space: pre;
+  /* Block-drawing glyphs must not be re-spaced or selected as text. */
+  letter-spacing: 0;
+  user-select: none;
+}
+
+.ascii--glow pre {
+  text-shadow:
+    0 0 calc(6px * var(--ascii-glow)) color-mix(in srgb, var(--ascii-fg) 70%, transparent),
+    0 0 calc(18px * var(--ascii-glow)) color-mix(in srgb, var(--magenta) 40%, transparent);
+}
+
+/*
+ * Sizing presets. Each value is (100 / columns / 0.6) cqw for that piece, so it
+ * fills its container instead of floating in the middle of it.
+ */
+
+/* cassette — 44 columns */
+.ascii--hero {
+  --ascii-size: clamp(5px, 3.7cqw, 16px);
+}
+
+/* cat — 48 columns */
+.ascii--mascot {
+  --ascii-size: clamp(4px, 3.4cqw, 13px);
+}
+
+/* compact wordmark — 18 columns */
+.ascii--brand {
+  --ascii-size: clamp(7px, 8.8cqw, 14px);
+}
+
+/* compact cassette — 26 columns */
+.ascii--inline {
+  --ascii-size: clamp(4px, 6.2cqw, 11px);
+}
+
+/*
+ * The splash wordmark reveals column by column rather than by swapping frames,
+ * which keeps the letters from reflowing mid-animation.
+ */
+.ascii--reveal pre {
+  animation: ascii-reveal calc(900ms / max(var(--motion-scale), 0.001)) ease-out both;
+}
+
+@keyframes ascii-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.2;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+/* wordmark — 49 columns */
+.ascii--wordmark {
+  --ascii-size: clamp(6px, 3.3cqw, 20px);
+}
+
+/*
+ * A highlight sweeps across the letters instead of the frames swapping, so the
+ * block face never reflows mid-animation. The fill is a clipped gradient, which
+ * means the usual text-shadow glow has to become a drop-shadow filter.
+ */
+.ascii--wordmark pre {
+  background: linear-gradient(
+    100deg,
+    var(--ascii-fg) 0 42%,
+    color-mix(in srgb, var(--ascii-fg) 30%, white) 50%,
+    var(--ascii-fg) 58% 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(
+    0 0 calc(7px * var(--ascii-glow)) color-mix(in srgb, var(--ascii-fg) 70%, transparent)
+  );
+  animation: ascii-sweep calc(5s / max(var(--motion-scale), 0.001)) linear infinite;
+}
+
+/* Resolving a link speeds the sweep up — the art doubles as the spinner. */
+.ascii--busy pre {
+  animation-duration: calc(1.1s / max(var(--motion-scale), 0.001));
+}
+
+@keyframes ascii-sweep {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}

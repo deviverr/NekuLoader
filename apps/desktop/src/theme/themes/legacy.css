@@ -1,0 +1,44 @@
+/*
+ * Legacy — the quiet colour skin.
+ *
+ * The same layout and components as the other skins, dialled down: desaturated
+ * accents, a softer starfield, no art glow, and smaller ASCII so the interface
+ * reads as calm. Loaded after mono and cosmic, and restates every token it
+ * cares about since either could be underneath it.
+ */
+:root[data-theme="legacy"] {
+  --bg-0: #100c18;
+  --bg-1: #171226;
+  --bg-2: #1e1830;
+  --surface: rgba(30, 24, 48, 0.9);
+  --surface-solid: #1e1830;
+  --surface-raised: #262038;
+
+  --border: #4a3c66;
+  --border-soft: rgba(150, 130, 180, 0.16);
+  --border-bright: #8f7ab5;
+
+  --text: #e4e0ec;
+  --text-muted: #a49bb8;
+  --text-faint: #746b88;
+  --title: #c3b2dc;
+
+  --action: #5a4478;
+  --action-hover: #6f558f;
+  --cyan: #7fb8cc;
+  --magenta: #c489b4;
+  --success: #8fce9f;
+  --focus: #7fb8cc;
+
+  --star: #9a8cb5;
+  --star-alpha: 0.28;
+
+  /* The quiet skin: no bloom, smaller art. */
+  --ascii-fg: #b0a3c8;
+  --ascii-glow: 0;
+  --ascii-size: clamp(4px, 1.6cqw, 11px);
+
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}

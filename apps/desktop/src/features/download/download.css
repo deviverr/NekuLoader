@@ -1,0 +1,254 @@
+/* The link composer: art, one field, one status line. Nothing else. */
+.composer {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 6px 0 4px;
+}
+
+.composer__art {
+  width: min(660px, 100%);
+}
+
+.ascii.composer__art pre {
+  width: max-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.composer__drop {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  width: min(600px, 100%);
+  padding: 14px;
+  border: 2px dashed color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  transition: border-color 0.12s steps(2), background 0.12s steps(2);
+}
+
+.composer__drop--over {
+  border-color: var(--ascii-fg);
+  background: color-mix(in srgb, var(--ascii-fg) 10%, transparent);
+}
+
+.composer__drop--filled {
+  border-style: solid;
+}
+
+.composer__field {
+  width: 100%;
+  min-height: 46px;
+  font-size: 14px;
+}
+
+.composer__field input {
+  font-size: 14px;
+}
+
+.composer__hint {
+  color: var(--text-faint);
+  font-family: var(--pixel-font);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.clipboard-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 6px 10px 6px 6px;
+  border: 2px solid var(--border-bright);
+  background: color-mix(in srgb, var(--ascii-fg) 8%, transparent);
+  clip-path: var(--pixel-clip);
+  color: var(--text);
+  font-size: 12px;
+  animation: chip-blink 1.2s steps(2) 2;
+}
+
+.clipboard-chip:hover {
+  background: color-mix(in srgb, var(--ascii-fg) 18%, transparent);
+}
+
+.clipboard-chip__key {
+  padding: 2px 6px;
+  background: var(--ascii-fg);
+  color: var(--bg-0);
+  font-family: var(--pixel-font);
+}
+
+.clipboard-chip__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes chip-blink {
+  50% {
+    border-color: var(--border);
+  }
+}
+
+.composer__status {
+  min-height: 16px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.composer__error {
+  color: var(--danger);
+}
+
+.download-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.preview__artist {
+  color: var(--title);
+  font-size: 12px;
+}
+
+.format-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.format {
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: rgba(255, 255, 255, 0.02);
+  text-align: left;
+}
+
+.format:hover:not(:disabled) {
+  border-color: var(--border-bright);
+}
+
+.format:disabled {
+  opacity: 0.4;
+}
+
+.format--active {
+  border-color: var(--border-bright);
+  background: color-mix(in srgb, var(--action) 30%, transparent);
+}
+
+.format strong {
+  font-size: 11px;
+}
+
+.format small {
+  color: var(--text-faint);
+  font-size: 8px;
+}
+
+.quality-note {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.output-path {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+  background: var(--log-bg);
+  text-align: left;
+}
+
+.output-path:hover {
+  border-color: var(--border-bright);
+}
+
+.output-path small {
+  color: var(--text-faint);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.output-path strong {
+  overflow: hidden;
+  font-size: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.quick-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.primary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 8px;
+}
+
+.view-stack > .source-matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: min(600px, 100%);
+  margin: 0 auto;
+  justify-self: center;
+}
+
+.source-matrix div {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 2px solid var(--border-soft);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  clip-path: var(--pixel-clip);
+  text-align: center;
+}
+
+.source-matrix dt {
+  color: var(--text-muted);
+  font-family: var(--pixel-font);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.source-matrix dd {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+
+@media (max-width: 1040px) {
+  .download-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .format-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .quick-options,
+  .primary-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .view-stack > .source-matrix {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -9,7 +9,7 @@ NekuLoader is for media you own or are authorized to download. Recognizing a pro
 
 ## NekuLoader 3.2 alpha
 
-The 3.2 rewrite is a native app rather than a Java JAR. It currently includes automatic link recognition, a persistent download queue, local history, a searchable music-folder scan, managed downloader components, the original NekuLoader icon, and the refined legacy interface.
+The 3.2 rewrite is a native app rather than a Java JAR. It currently includes automatic link recognition, a persistent download queue, local history, a searchable music-folder scan, managed downloader components, the original NekuLoader icon, and a themed interface with six languages, a local player, Android USB and tokenized Wi‑Fi transfer.
 
 ### Current provider behavior
 
@@ -17,9 +17,9 @@ The 3.2 rewrite is a native app rather than a Java JAR. It currently includes au
 | --- | --- |
 | YouTube / YouTube Music | Direct extraction through yt-dlp when the media is accessible |
 | SoundCloud | Direct extraction through yt-dlp when the media is accessible |
-| Spotify | Metadata-matching download through SpotDL; the matched audio source and quality can differ from Spotify's catalog stream |
-| Deezer | Link recognition only; metadata matching and audio download are not implemented yet |
-| Apple Music | Link recognition only; metadata matching and audio download are not implemented yet |
+| Spotify | SpotDL metadata matching, with public-catalog fallback for tracks and albums; matched audio and quality can differ from Spotify |
+| Deezer | Public catalog metadata → duration-checked audio matching (tracks, albums, and playlists) |
+| Apple Music | Public catalog metadata → duration-checked audio matching (songs and albums; Apple playlists unavailable through the public API) |
 
 Choosing FLAC, WAV, or another output format does not improve the source. A lossless output can avoid an additional lossy encode, but it cannot recover detail that was not present in the downloaded audio.
 
@@ -27,7 +27,7 @@ Choosing FLAC, WAV, or another output format does not improve the source. A loss
 
 Settings → Components & updates provides an explicit **Install required components** or **Update required components** action. NekuLoader does not silently download the toolchain at startup.
 
-The action installs or updates yt-dlp, Deno, FFmpeg, and FFprobe in the app-data directory. It also attempts to install optional SpotDL where upstream publishes a managed build for the current platform; manual system installations are detected on other platforms. Release assets are SHA-256 verified against their published GitHub metadata, downloaded to staging, and health-checked before promotion. An optional SpotDL failure does not block the required toolchain.
+The action installs or updates yt-dlp, recommended Deno, FFmpeg, and FFprobe in the app-data directory. It also attempts to install optional SpotDL where upstream publishes a managed build for the current platform; manual system installations are detected on other platforms. Release assets are SHA-256 verified against their published GitHub metadata, downloaded to staging, and health-checked before promotion. An optional SpotDL failure does not block the required toolchain.
 
 On first run, missing required components open Settings with an actionable notice. Installation still requires a click; nothing is downloaded silently.
 

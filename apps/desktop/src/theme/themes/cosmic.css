@@ -1,0 +1,79 @@
+/*
+ * Cosmic — the optional colour skin.
+ *
+ * Deep-space indigo grounds, nebula violet chrome, and two signal accents
+ * (cyan for activity, magenta for the mark). Mono is the default; this is a
+ * full override of it, so every token it touches must be restated here.
+ */
+:root[data-theme="cosmic"] {
+  /* Grounds — near-black indigo, layered rather than flat. */
+  --bg-0: #07060f;
+  --bg-1: #0d0a1c;
+  --bg-2: #140f28;
+  --surface: rgba(20, 15, 40, 0.82);
+  --surface-solid: #140f28;
+  --surface-raised: #1d1638;
+  --log-bg: #06050e;
+
+  /* Edges */
+  --border: #3a2c63;
+  --border-soft: rgba(148, 108, 255, 0.16);
+  --border-bright: #9d6bff;
+
+  /* Type */
+  --text: #ece6fb;
+  --text-muted: #a99cc9;
+  --text-faint: #6f6490;
+  --title: #d9b8ff;
+
+  /* Signals */
+  --action: #6d3ba8;
+  --action-hover: #8a4fd0;
+  --cyan: #57e2ff;
+  --magenta: #ff6bd6;
+  --success: #6bffa8;
+  --warning: #ffd166;
+  --danger: #ff7b8a;
+  --focus: #57e2ff;
+
+  /* Starfield */
+  --star: #b98cff;
+  --star-alpha: 0.47;
+
+  /* ASCII art */
+  --ascii-fg: #c9a6ff;
+  --ascii-glow: 0.4;
+  /*
+   * A monospace cell is roughly 0.6em wide, so line-height 1.2 makes cells
+   * about 1:2 — which is the ratio the art is drawn against. Tightening this
+   * squashes every piece; it is not a free knob.
+   */
+  --ascii-line-height: 1.15;
+  /*
+   * To fill a container, font-size ≈ (100 / columns / 0.6) cqw. The default
+   * targets the ~48-column pieces; per-piece classes override it.
+   */
+  --ascii-size: clamp(4px, 3.4cqw, 15px);
+
+  /* Log colours, selectable independently of the chrome (legacy 3.1 parity). */
+  --log-green: #7dffa8;
+  --log-blue: #7fb2ff;
+  --log-cyan: #57e2ff;
+  --log-yellow: #ffe066;
+  --log-orange: #ffab5e;
+  --log-pink: #ff8ad4;
+  --log-red: #ff7b8a;
+  --log-white: #ece6fb;
+
+  /* Shape — squared off, to sit with the block-glyph art. */
+  --radius-control: 3px;
+  --radius-panel: 4px;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+
+  --mono: "SFMono-Regular", ui-monospace, "Cascadia Mono", "JetBrains Mono",
+    "DejaVu Sans Mono", "Liberation Mono", Menlo, Consolas, monospace;
+
+  /* Motion — overridden per-render by ThemeProvider. */
+  --motion-scale: 1;
+  --frame-alpha: 1;
+}
