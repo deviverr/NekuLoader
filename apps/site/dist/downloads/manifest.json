@@ -15,6 +15,15 @@
       "sha256": "f9f287a8b0870de7f69974729ba4c247d14daff5c7391e066c74d95fc5f1414e",
       "available": true,
       "experimental": true
+    },
+    {
+      "platform": "windows-x64",
+      "version": "3.2.0-alpha.3",
+      "url": "/nekuloader/downloads/NekuLoader_3.2.0-alpha.3_x64-setup.exe",
+      "sha256": "0e4ecfe44c7eb3ecd4f701364b111447a7a591d64eee2b4b5f68b7f15f28c3b7",
+      "available": true,
+      "experimental": true,
+      "unsigned": true
     }
   ]
 }
