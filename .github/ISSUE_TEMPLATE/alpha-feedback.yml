@@ -1,0 +1,60 @@
+name: Alpha experience feedback
+description: Tell us how installation, setup and the first download went.
+title: "[Alpha feedback]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for trying NekuLoader. Issues are public: remove credentials, cookies, private links and personal paths. Use media you own or may download."
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: "3.2.0-alpha.3"
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and CPU architecture
+      placeholder: "macOS 27 arm64 / Windows 11 x64 / Debian 12 x64"
+    validations:
+      required: true
+  - type: dropdown
+    id: session
+    attributes:
+      label: Session type
+      options:
+        - Human tester
+        - Simulated agent review
+    validations:
+      required: true
+  - type: dropdown
+    id: progress
+    attributes:
+      label: How far did you get without help?
+      options:
+        - Could not download or install
+        - Installed but could not open
+        - Opened but component setup failed
+        - Components ready but download failed
+        - Download completed but library or playback failed
+        - Completed download and playback
+    validations:
+      required: true
+  - type: textarea
+    id: experience
+    attributes:
+      label: What happened or felt confusing?
+      description: Include the exact failing step, expected result and any error. Security warnings are useful feedback too.
+    validations:
+      required: true
+  - type: textarea
+    id: repeat
+    attributes:
+      label: Would you use it again, and for what task?
+      description: Optional. Tell us what would make it useful in your actual routine.
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Optional screenshot or details
+      description: Remove private information before attaching anything.

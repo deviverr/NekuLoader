@@ -1,80 +1,135 @@
-# NekuLoader: 30-day launch plan
+# NekuLoader launch and revenue plan
 
-Prepared 2026-11-10 for the selected Mac checkout, 3.2.0-alpha.3. Dates below are a proposed sequence after launch preparation begins, not scheduled jobs or completed results.
+Updated 2026-11-10. Working plan, not a claim of traction or promised revenue.
 
-## Product and decision
+## Decision
 
-NekuLoader is a native desktop home for authorized audio: persistent downloading, local playback, a searchable library, themes, six languages and phone transfer. The identity is already distinctive: the original Neku cat, Pixelify Sans, pixel controls, starfield and cosmic colors. The website must look like the actual app. Use real screenshots and owned recordings in demonstrations.
+Launch the current free proprietary alpha to a small audience now. Lead with
+Mac Apple silicon, where the shipped app is signed, Apple-notarized and tested.
+Windows x64 is an unsigned testing candidate with 49 Rust tests passed under
+Wine; native installation/UI feedback is pending. Debian 12 x64 has container
+and headless checks; normal desktop testing is pending. Physical-phone testing
+and clean-machine coverage remain open. The product is ready for a pilot, not a
+claim that every platform or feature is finished.
 
-The owner chose a **free proprietary alpha**: downloads are allowed under the project license, source code rights are reserved. Do not call it open source or assume permission to redistribute or modify code. Follow the repository LICENSE, third-party notices and exact helper-binary obligations.
+The live page is https://nekudev.com/nekuloader/ . Keep its minimal black design.
+The root homepage stays image-only. Keep technical detail in release notes.
 
-Provider truth: YouTube/YouTube Music/SoundCloud use yt-dlp. Spotify uses SpotDL with public-catalog fallback for tracks/albums; full playlist fallback is unavailable. Deezer tracks/albums/playlists and Apple songs/albums use duration-checked catalog matching. Apple playlists are unavailable through the public API. Matched audio can differ from the catalog stream; FLAC conversion cannot restore missing detail.
+## Audience and promise
 
-## Days 1–3: a trustworthy first download
+First audience hypothesis: people who already keep a local music/audio library
+and want downloading, artwork, organization and playback in one desktop app.
+Recruit Mac users first, then Windows friends as explicitly identified testers.
 
-- Complete checks against the exact candidate commit; record TypeScript, production build and Rust test results separately from human or installer testing.
-- Publish only an artifact that has a real file, SHA-256, release notes and explicit platform/signing status. macOS Apple silicon is the only launch artifact currently validated. GitHub cross-platform CI is blocked by account billing; Windows remains unavailable. An experimental Debian 12 x64 package was built and installed in an isolated container with headless checks; keep that test scope explicit until real Linux desktop checks pass.
-- On a clean Mac, install, explicitly install components, download one owned recording, play it, restart and confirm queue/history persistence. Test a failed item and retry. A development-machine launch is not a clean-machine pass.
-- Preserve the owner's unsigned Windows policy. Mac signing/notarization remains opt-in after the selected Apple team and encrypted credentials are configured. Do not label an unsigned build signed or notarized.
-- Review dependency notices and original icon rights. Current GPL helper binaries require exact-build license/source-obligation review; the project's proprietary license does not replace their terms.
+Working description: **A pixel-styled desktop app for saving authorized audio
+and playing your local library.** The recognizable black/pixel interface is the
+visual hook; the complete save → library → playback journey is the practical
+reason to try it. Test this positioning against actual user replies.
 
-**Exit evidence:** candidate version + checksum; recorded environment; successful core journey; truthful known-issues list. Do not invent a test pass if a machine is unavailable.
+Do not market catalog matching as downloading the original Spotify/Deezer/Apple
+stream. Do not promise lossless source quality, bypassing restrictions, working
+phone transfer on every device, or general Windows/Linux reliability. The
+current alpha is proprietary, not open source.
 
-## Days 4–7: pilot with actual users
+## Revenue model to test
 
-Recruit 8–12 volunteers, including nontechnical music listeners and local-library collectors. Start on the verified platform, then expand to Windows/Linux candidates only when artifacts are tested. Let users install, set up components, download an authorized item and find/play it without coaching. Then try phone transfer on a real Android device and an iPhone browser. Record task completion, time and exact points of confusion.
+1. **Now: optional support**, with suggested one-time amounts of $5, $15 and $25.
+   These are proposed amounts, not active products. Support funds development;
+   it buys no unshipped feature, guaranteed response time or future entitlement.
+   Current alpha downloads stay free. Put one small Support link near Feedback
+   once a real owner-controlled checkout exists. Do not add an account system,
+   fake checkout, artificial download limit or intrusive payment prompt.
+2. **After repeat use: test a $19 one-time v1 license hypothesis**, explicitly
+   limited to the released major version if implemented. Ask users about a
+   concrete workflow before coding a paywall. Candidate future paid workflows:
+   metadata repair, duplicate review, saved organization recipes or device-sync
+   profiles. None of these is being sold or promised now. Existing alpha
+   functionality is not being removed by this plan.
+3. **Subscriptions later only if recurring value is demonstrated.** Local-only
+   convenience alone is not evidence that people want another subscription.
+   Avoid unlimited lifetime-update promises and cloud processing costs during
+   the pilot.
 
-Agents should independently run the same tasks to identify confusion and bugs. Label those sessions simulated user reviews; they are not replacements for human feedback or real devices.
+The first commercial target is five voluntary supporters. It is a test target,
+not an expected outcome. At a future $19 price, 30 purchases produce $570 gross
+one-time sales before fees, refunds, taxes and support. That arithmetic is not a
+forecast and is not monthly recurring revenue.
 
-**Proposed threshold:** at least 80% complete the core journey without coaching, no unresolved data loss, and no blocker preventing first-run setup. If fewer than five testers participate, report the small sample rather than treating percentages as validated demand.
+A payment route is not selected yet. The owner was asked for an existing
+supporter/payment page. Before enabling it, confirm ownership, payout eligibility
+and acceptance of this software category with the chosen provider. No money is
+being collected or payment-provider contract accepted by this plan.
 
-## Days 8–14: a quiet public alpha
+## First 7 days
 
-- Deploy the authentic pixel/cosmic page at nekudev.com/nekuloader on the user's VPS. The Cosmic website and Mac alpha.3 download are now live with HTTPS; a real browser download passed checksum verification. Preserve the existing domain configuration and unrelated services.
-- Serve downloads/manifest.json with an explicit available flag, version, local installer URL and SHA-256. The site shows a Mac button only when the manifest and installer availability checks succeed. Never publish a placeholder installer or checksum.
-- Publish a 30–45-second walkthrough using owned audio: link → format → queue → playback → phone. Show real alpha behavior and any setup step users encounter.
-- Add concise bug-report prompts: OS, architecture, app version, expected behavior and reproducible steps. Ask users to remove cookies, tokens and personal paths from logs.
-- Post once to an existing personal audience and one relevant desktop/music-organization community whose rules allow promotion. Ask for a specific task test; do not bulk-message strangers or buy ads.
+| Sequence | Work | Evidence / target |
+| --- | --- | --- |
+| 1 | Invite friends and existing contacts with the prepared tester message. | 10 consenting human testers; aim for 5 Mac and 5 Windows. Sample size is explicit. |
+| 2 | Observe first-run setup, authorized download, library discovery and playback without coaching. | Record each failed step, elapsed time and environment. Aim for 8 of 10 to complete the core journey. |
+| 3 | Fix the three most frequent or severe failures; prioritize data loss and inability to start. | Reproduction and reporter retest, not just an automated pass. |
+| 4 | Record a real 30-second walkthrough using owned or licensed media. | Show required component setup honestly; use the storyboard in LAUNCH-KIT.md. |
+| 5 | Publish one demonstration to the owner's existing audience. | Actual visits/downloads and useful replies; log the channel. |
+| 6 | Share a tailored feedback post in one relevant community after checking its current rules. | Five useful task reports, not an upvote target. |
+| 7 | Add the optional Support link when checkout is ready. | Working mobile/desktop checkout; correct recipient and currency; no invented benefits. |
 
-**Evidence to collect:** working HTTPS page/download, five useful feedback reports, and the three most common setup or reliability problems.
+These are work items, not calendar bookings or scheduled posts. No promotional
+messages have been sent. Drafts are prepared for review; posting requires an
+explicit destination and instruction to publish.
 
-## Days 15–21: fix what users actually hit
+## Days 8–30
 
-Resolve the three most frequent pilot issues before adding providers. Publish a small patch and changelog that names the behavior changed and how it was checked. Ask original reporters to retry the precise failing task. Test at least one Windows and Linux candidate on clean systems before adding their direct buttons. Translate stable onboarding/help text and verify major tasks in each advertised language.
+Ask testers after seven days whether they used the app again, what task they did,
+and what still required help. Record nonresponses separately from negative
+answers. A proposed signal to continue is five of the first ten participants
+reporting voluntary repeat use. This tiny sample is directional, not market
+validation.
 
-Publish two useful guides with real screenshots: what Spotify matching means, and how to move local music to a phone. Avoid misleading search phrases such as guaranteed Spotify FLAC or unrestricted premium downloads.
+Publish a short update showing a real user-reported fix. Make two focused clips:
+"link to local library" and "play your existing local files." Mention matching
+limits wherever a catalog provider is demonstrated. Use screenshots from the
+current version; no simulated download success or fictional testimonial.
 
-**Proposed threshold:** five people return voluntarily within a week, and previously blocked reporters can finish their task. These are targets, not forecasts.
+Interview returning users about the last time library organization cost them
+time. Show one specific future paid workflow and a proposed price; distinguish
+"sounds nice" from a concrete request to purchase after release. Build the paid
+workflow only if repeated needs and willingness to pay justify it. Do not take
+preorders for an undefined feature.
 
-## Days 22–30: decide whether to expand or monetize
+Consider Product Hunt once the core journey succeeds for pilot users and native
+Windows feedback is incorporated. It is a distribution experiment, not the main
+business. Its current guidance requires a personal maker account, product URL,
+name, tagline, description, launch tag, logo and gallery image. Ask people to try
+and comment; never buy or request upvotes.
 
-Interview ten returning users if the audience is large enough. Ask which workflow saves time, what remains annoying, and what they already pay for. Summarize answers verbatim with consent, then group repeated needs. Do not treat download counts or GitHub stars as proof of retention.
+## Measurement and stop rules
 
-Keep the promised free alpha free. Test optional support only after choosing a payment route for which the owner is eligible. GitHub Sponsors supports one-time/monthly tiers but requires recipient residence in a supported region; Ukraine was absent from its published list when checked on 2026-11-10. Timezone alone does not establish eligibility. Do not display an unconfigured payment button.
+Use the [scorecard](launch/SCORECARD.md) and [prepared launch copy](launch/LAUNCH-KIT.md). Distinguish download requests from
+people, installs from downloads, and return use from first-run success. Count
+human sessions separately from simulated agent reviews. Start with voluntary
+reports; do not collect source URLs, cookies, audio files or background telemetry.
 
-Potential paid future workflows: metadata cleanup, duplicate review, saved organization recipes and convenient device-sync profiles. These are concepts, not shipped features. Test willingness to pay before building them. A one-time purchase or optional support is a better first hypothesis than a subscription for this local desktop scope. Never sell supposed access to provider content or guaranteed extraction.
+No ad spend in this pilot. Reconsider paid acquisition only after repeat use,
+purchase conversion, refund/support costs and a positive contribution margin
+have actually been measured. If users cannot get through setup, spend the next
+iteration fixing setup. If they install but do not return, investigate the use
+case before building a paid tier.
 
-**Day-30 decision:** expand distribution if core-task completion and return use hold up; spend the next iteration on reliability if they do not. Start a paid-feature experiment only when repeated user requests justify it. Do not manufacture urgency or change the free alpha terms without an explicit owner decision.
+## Comparable products and sources
 
-## Measurement and sources
+Checked 2026-11-10. Competitor pricing is evidence of available business models,
+not proof NekuLoader users will pay the same amount.
 
-Use voluntary interviews and issue reports initially. Record aggregate install/task success and support burden without hidden analytics or collecting source links/cookies. Track human and agent sessions separately.
-
-Primary sources checked for distribution guidance:
-
-- Apple Developer ID signing and notarization: https://developer.apple.com/developer-id/
-- GitHub Releases and tagged downloadable artifacts: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
-- GitHub Sponsors eligibility and supported recipient regions: https://docs.github.com/en/sponsors/getting-started-with-github-sponsors/about-github-sponsors
-- FFmpeg license differences by build configuration: https://ffmpeg.org/legal.html
-
-These sources support specific distribution/payment/license facts, not the proposed audience, prices, conversion rates or commercial success.
-
-## Launch status — 2026-11-10
-
-Published alpha.3 for Mac Apple silicon at https://nekudev.com/nekuloader/ and
-https://github.com/deviverr/NekuLoader/releases/tag/v3.2.0-alpha.3 . The visitor
-flow was exercised in the browser and the actual downloaded DMG matched its
-published SHA-256. The next marketing step is an 8–12-person pilot, followed by
-a short real-workflow demonstration and a targeted feedback post. No promotional
-messages have been sent on the owner's behalf. The Linux container checks passed and the resulting Debian 12 x64 download is
-now explicitly experimental; it does not establish general Linux desktop compatibility.
+- [Stacher](https://stacher.io/): free core; optional paid library/themes/support.
+  [Official Patreon membership](https://www.patreon.com/cw/stacher/membership)
+  lists Premium at $5/month.
+- [4K Video Downloader Plus](https://www.4kdownload.com/buy/videodownloader-8?source=4k-video-downloader):
+  page lists Lite $15/year, Personal $25 and Pro $45 lifetime product licenses.
+  Prices/taxes may vary. NekuLoader's proposed $19 is an untested hypothesis.
+- [cobalt donations](https://cobalt.tools/donate): an example of voluntary funding
+  alongside a free product, not evidence of donation conversion or profitability.
+- [Product Hunt submission guidance](https://help.producthunt.com/en/articles/479557-how-to-post-a-product),
+  [launch FAQ](https://help.producthunt.com/en/articles/17734646-8-launch-faq-and-myths),
+  [page requirements](https://help.producthunt.com/en/articles/17834537-4-build-your-product-page).
+- [Current NekuLoader release](https://github.com/deviverr/NekuLoader/releases/tag/v3.2.0-alpha.3),
+  docs/testing/MAC-NOTARIZATION.md and docs/testing/WINDOWS-FRIEND-TEST.md are the
+  basis for its distribution/test claims.
