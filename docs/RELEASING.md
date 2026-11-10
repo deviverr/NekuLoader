@@ -171,6 +171,14 @@ Alpha.3 passed 24 frontend tests and 52 Rust tests. Native installed-app workflo
 and the additional album-row fix were verified; see `docs/USER-TEST-REPORT.md`.
 The final Mac artifact was generated with the selected 1.95 Rust toolchain and
 `CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG=true npm run tauri build -- --bundles dmg -- --locked`.
-Public release scope is the locally tested macOS arm64 alpha. Broader platform
+Public release scope is the locally tested macOS arm64 alpha plus an experimental Debian 12 x64 package with container/headless verification. Broader platform
 coverage remains explicit in `docs/releases/v3.2.0-alpha.3.md`. GitHub Actions is
 blocked by an account billing lock; failed jobs did not execute tests.
+
+Linux validation subsequently passed 24 frontend tests, 52 Rust tests, optimized
+DEB build and installation, linked-library resolution, two 25-second Xvfb process
+smokes, and managed required-component installation including fresh FFmpeg and
+FFprobe. Interactive desktop and physical-phone testing are still open. Local
+and Linux compile-input digests matched exactly. The site and GitHub prerelease
+now offer both artifacts; Windows and Intel Mac remain unavailable. The download
+UI passed 26 availability/error-path tests and both files have published SHA-256.

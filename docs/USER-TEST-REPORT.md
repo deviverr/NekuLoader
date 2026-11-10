@@ -6,7 +6,7 @@ Scope: the user-selected Mac checkout at `/Users/dev/Projects/NekuLoader/recover
 
 An agent walked through first-time downloader, keyboard-only user, and regular music-listener scenarios by inspecting the interface and native command code. Automated component tests simulate clicks, keyboard focus, native API replies, and audio events in jsdom. These are **simulated user scenarios**, not human usability research, real browser/audio playback, installed-app testing, or OS/device smoke tests.
 
-Final frontend verification ran directly in the Mac checkout with its existing dependencies: `npm run check` passed TypeScript and **23 tests across 3 files**; `npm run build` passed TypeScript and produced the Vite production bundle. Four new playback regression cases cover clearing/removing the last track, seek/pause checkpointing, and active-row pause/resume. No media was downloaded and no phone was modified by these tests.
+Final frontend verification ran directly in the Mac checkout with its existing dependencies: `npm run check` passed TypeScript and **24 tests across 3 files**; `npm run build` passed TypeScript and produced the Vite production bundle. Five new playback regression cases cover clearing/removing the last track, seek/pause checkpointing, and active-row pause/resume. No media was downloaded and no phone was modified by these tests.
 
 Historical drive verification: an exact-lock temporary QA copy passed TypeScript, 16 tests and the frontend production build. AppleDouble `._*` metadata files were excluded from that temporary QA copy because they are not source code. These results describe the older checkout and are not the final project validation.
 
@@ -57,3 +57,13 @@ seven opt-in tests ignored; separately executed integration checks are listed in
 A real alpha.3 Cosmic screenshot is used by the website. The original Mono
 appearance was restored after capture. The test destination remains the isolated
 QA media folder. No existing music or user queue/history records were deleted.
+
+Final alpha.3 DMG was mounted and launched separately; the corrected album row
+paused/resumed at the existing position with matching accessible labels.
+ADB and iOS device inventories were empty, so physical-phone checks are blocked
+by unavailable hardware rather than reported as passes.
+
+Linux Debian12/x64 validation passed 24 UI tests, 52 Rust tests, .deb build/install,
+ldd resolution, 25-second headless process smoke, and clean managed toolchain
+installation. Headless checks used a container-only WebKit sandbox override;
+normal-user desktop behavior and phone hardware remain unverified.

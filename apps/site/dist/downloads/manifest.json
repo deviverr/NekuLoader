@@ -7,6 +7,14 @@
       "sha256": "d07e1e0edd22db0e66161d904be3a484b9c56b18fcec1c7f978e82f44b21b35e",
       "available": true,
       "unsigned": true
+    },
+    {
+      "platform": "linux-x64",
+      "version": "3.2.0-alpha.3",
+      "url": "/nekuloader/downloads/NekuLoader_3.2.0-alpha.3_amd64.deb",
+      "sha256": "f9f287a8b0870de7f69974729ba4c247d14daff5c7391e066c74d95fc5f1414e",
+      "available": true,
+      "experimental": true
     }
   ]
 }

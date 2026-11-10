@@ -13,7 +13,7 @@ Provider truth: YouTube/YouTube Music/SoundCloud use yt-dlp. Spotify uses SpotDL
 ## Days 1–3: a trustworthy first download
 
 - Complete checks against the exact candidate commit; record TypeScript, production build and Rust test results separately from human or installer testing.
-- Publish only an artifact that has a real file, SHA-256, release notes and explicit platform/signing status. macOS Apple silicon is the only launch artifact currently validated. GitHub cross-platform CI is blocked by account billing; Windows and Linux remain unavailable until real builds and clean-machine checks pass.
+- Publish only an artifact that has a real file, SHA-256, release notes and explicit platform/signing status. macOS Apple silicon is the only launch artifact currently validated. GitHub cross-platform CI is blocked by account billing; Windows remains unavailable. An experimental Debian 12 x64 package was built and installed in an isolated container with headless checks; keep that test scope explicit until real Linux desktop checks pass.
 - On a clean Mac, install, explicitly install components, download one owned recording, play it, restart and confirm queue/history persistence. Test a failed item and retry. A development-machine launch is not a clean-machine pass.
 - Preserve the owner's unsigned Windows policy. Mac signing/notarization remains opt-in after the selected Apple team and encrypted credentials are configured. Do not label an unsigned build signed or notarized.
 - Review dependency notices and original icon rights. Current GPL helper binaries require exact-build license/source-obligation review; the project's proprietary license does not replace their terms.
@@ -30,7 +30,7 @@ Agents should independently run the same tasks to identify confusion and bugs. L
 
 ## Days 8–14: a quiet public alpha
 
-- Deploy the authentic pixel/cosmic page at nekudev.com/nekuloader on the user's VPS. Keep the existing homepage and other routes intact. Until a reachable server address, SSH username and existing server configuration are known, deployment is pending.
+- Deploy the authentic pixel/cosmic page at nekudev.com/nekuloader on the user's VPS. The Cosmic website and Mac alpha.3 download are now live with HTTPS; a real browser download passed checksum verification. Preserve the existing domain configuration and unrelated services.
 - Serve downloads/manifest.json with an explicit available flag, version, local installer URL and SHA-256. The site shows a Mac button only when the manifest and installer availability checks succeed. Never publish a placeholder installer or checksum.
 - Publish a 30–45-second walkthrough using owned audio: link → format → queue → playback → phone. Show real alpha behavior and any setup step users encounter.
 - Add concise bug-report prompts: OS, architecture, app version, expected behavior and reproducible steps. Ask users to remove cookies, tokens and personal paths from logs.
@@ -68,3 +68,13 @@ Primary sources checked for distribution guidance:
 - FFmpeg license differences by build configuration: https://ffmpeg.org/legal.html
 
 These sources support specific distribution/payment/license facts, not the proposed audience, prices, conversion rates or commercial success.
+
+## Launch status — 2026-11-10
+
+Published alpha.3 for Mac Apple silicon at https://nekudev.com/nekuloader/ and
+https://github.com/deviverr/NekuLoader/releases/tag/v3.2.0-alpha.3 . The visitor
+flow was exercised in the browser and the actual downloaded DMG matched its
+published SHA-256. The next marketing step is an 8–12-person pilot, followed by
+a short real-workflow demonstration and a targeted feedback post. No promotional
+messages have been sent on the owner's behalf. The Linux container checks passed and the resulting Debian 12 x64 download is
+now explicitly experimental; it does not establish general Linux desktop compatibility.

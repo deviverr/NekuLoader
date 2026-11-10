@@ -12,8 +12,8 @@ HTTPS and renewal use Certbot. Other site routes/virtual hosts are separate.
 only for an explicitly available same-origin DMG with a SHA-256 digest and a
 successful non-HTML HEAD response. Installer binaries are release artifacts,
 not Git-tracked website source. Copy verified artifacts alongside the manifest
-when deploying. Windows/Linux remain unavailable until their validation permits
-publication. The free proprietary license preserves third-party license rights.
+when deploying. Windows and Intel Mac remain unavailable. The experimental Debian 12 x64 DEB
+is offered with its headless-test limitations stated. The free proprietary license preserves third-party license rights.
 
 Responsive browser checks passed at mobile and desktop widths, with loaded
 images and no horizontal overflow. Download availability logic has separate
