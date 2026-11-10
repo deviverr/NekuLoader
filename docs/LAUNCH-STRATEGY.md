@@ -31,34 +31,43 @@ stream. Do not promise lossless source quality, bypassing restrictions, working
 phone transfer on every device, or general Windows/Linux reliability. The
 current alpha is proprietary, not open source.
 
-## Revenue model to test
+## Revenue model to investigate
 
-1. **Now: optional support**, with suggested one-time amounts of $5, $15 and $25.
-   These are proposed amounts, not active products. Support funds development;
-   it buys no unshipped feature, guaranteed response time or future entitlement.
-   Current alpha downloads stay free. Put one small Support link near Feedback
-   once a real owner-controlled checkout exists. Do not add an account system,
-   fake checkout, artificial download limit or intrusive payment prompt.
-2. **After repeat use: test a $19 one-time v1 license hypothesis**, explicitly
-   limited to the released major version if implemented. Ask users about a
-   concrete workflow before coding a paywall. Candidate future paid workflows:
-   metadata repair, duplicate review, saved organization recipes or device-sync
-   profiles. None of these is being sold or promised now. Existing alpha
-   functionality is not being removed by this plan.
-3. **Subscriptions later only if recurring value is demonstrated.** Local-only
-   convenience alone is not evidence that people want another subscription.
-   Avoid unlimited lifetime-update promises and cloud processing costs during
-   the pilot.
+Owner feedback: Ko-fi produced little benefit, and a previous license system
+did not work. We do not yet know whether that meant technical failure, low
+traffic, weak conversion or low repeat use. The old licensing implementation
+was not found in the current app source or commit-message search. An existing
+Ko-fi account is not a reason to repeat it as the main revenue strategy.
 
-The first commercial target is five voluntary supporters. It is a test target,
-not an expected outcome. At a future $19 price, 30 purchases produce $570 gross
-one-time sales before fees, refunds, taxes and support. That arithmetic is not a
-forecast and is not monthly recurring revenue.
+First diagnose the previous attempt: actual downloads/users, repeat use, price,
+checkout completion, activation failures, refunds and what users expected to
+buy. Unknown metrics stay unknown. Do not assume a new checkout provider or
+stronger license enforcement creates demand.
 
-A payment route is not selected yet. The owner was asked for an existing
-supporter/payment page. Before enabling it, confirm ownership, payout eligibility
-and acceptance of this software category with the chosen provider. No money is
-being collected or payment-provider contract accepted by this plan.
+**Current product hypothesis:** a local audio-library workbench with a free
+save/play core and a paid workflow that repeatedly saves people time. Candidate
+future workflows include previewable metadata repair, duplicate review, batch
+folder/filename recipes or convenient device-sync profiles. Interview users
+with real disorganized libraries and pick one repeated problem. These features
+are concepts, not shipped or promised products.
+
+Test a one-time $19–29 v1 purchase hypothesis for one clearly demonstrated
+workflow. Show the exact before/after and ask what users already do and pay for.
+A stated willingness to buy is weaker evidence than a real purchase; measure
+them separately. Do not accept money for an undefined feature. Keep current
+alpha downloads free and do not retroactively remove existing functionality.
+
+After demand is demonstrated and the paid feature works, implement a simple
+checkout and reliable activation/recovery. Choose a payment provider only after
+checking software-category acceptance and the owner's payout eligibility.
+Avoid unlimited lifetime-update promises. Consider subscriptions only if the
+product demonstrates recurring value users want to pay for.
+
+A proposed first commercial milestone is five genuine purchases of a working
+paid offer, after testing and clear refund/support terms. At $19, 30 purchases
+produce $570 gross one-time sales before fees, refunds, taxes and support. This
+is arithmetic, not a forecast or monthly recurring revenue. No checkout or
+license implementation is being deployed before the failure diagnosis.
 
 ## First 7 days
 
@@ -70,7 +79,7 @@ being collected or payment-provider contract accepted by this plan.
 | 4 | Record a real 30-second walkthrough using owned or licensed media. | Show required component setup honestly; use the storyboard in LAUNCH-KIT.md. |
 | 5 | Publish one demonstration to the owner's existing audience. | Actual visits/downloads and useful replies; log the channel. |
 | 6 | Share a tailored feedback post in one relevant community after checking its current rules. | Five useful task reports, not an upvote target. |
-| 7 | Add the optional Support link when checkout is ready. | Working mobile/desktop checkout; correct recipient and currency; no invented benefits. |
+| 7 | Diagnose the old paid offer and interview returning users about one costly library task. | Actual failure cause; repeated need; concrete price feedback, not donation-link clicks. |
 
 These are work items, not calendar bookings or scheduled posts. No promotional
 messages have been sent. Drafts are prepared for review; posting requires an

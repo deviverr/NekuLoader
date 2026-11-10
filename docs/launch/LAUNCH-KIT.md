@@ -94,14 +94,26 @@ Phone transfer is excluded until tested on physical devices. A screen recording
 has not yet been produced. The licensed Blender test material used during QA
 requires attribution if reused; use your own recording for the simplest demo.
 
-## Optional support copy — only after checkout exists
+## Revenue interviews — before changing checkout
 
-Link label: Support NekuLoader
+Ask the owner about the previous paid attempt:
 
-Checkout description:
-Optional one-time support for NekuLoader's development. The current alpha stays
-free. This contribution includes no promised future features or paid support.
+- What exactly was sold, for what price, and to how many actual users?
+- Did checkout/activation break, or did interested users not purchase?
+- What support requests or refund reasons were recorded?
 
-Suggested amounts to test: $5 / $15 / $25. Confirm the provider supports this
-product/category, payout destination and appropriate payment classification
-before enabling it. Do not describe a purchase as a charitable donation.
+Ask returning testers about real behavior:
+
+- When did you last organize a batch of audio files? Show the steps if willing.
+- What took the longest or caused mistakes?
+- What tool do you use now, and have you paid for it?
+- For a demonstrated feature addressing that task, would $19–29 for v1 make
+  sense? What would need to work before you would buy?
+
+Show the same concrete workflow and terms when comparing answers. Keep stated
+interest separate from actual purchases. Do not imply that an unbuilt feature is
+available or accept payment until the scope and delivery terms are clear.
+
+The owner reported weak results from Ko-fi; another support button is not the
+primary revenue experiment. Technical licensing requirements depend on the
+previous failure and will be decided after diagnosis.

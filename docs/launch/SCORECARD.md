@@ -10,8 +10,8 @@ Targets below are proposed pilot goals. No user or revenue results are asserted.
 | Native Windows completed journeys | Not measured | 5 | Record Windows version/architecture and exact installer version |
 | Report voluntary return use after 7 days | Not measured | 5 of first 10 | Ask the same cohort; record nonresponses separately |
 | Useful reproducible problem reports | Not measured | 5 | Version, environment, task, actual result |
-| Voluntary supporters | Not measured | 5 | Confirmed payment records; exclude refunds/test payments |
-| Gross support receipts | Not measured | No forecast | Actual settled amounts, currency and period |
+| Purchases of a working paid offer | Not measured; no paid offer live | 5 after validation | Actual payment records; exclude refunds/test payments |
+| Gross receipts | Not measured | No forecast | Actual settled amounts, currency and period |
 | Fees / refunds / direct costs | Not measured | Record all | Payment records and actual incremental cost |
 | Net contribution before tax/owner labor | Not measured | No forecast | Receipts minus fees, refunds and direct costs; not accounting profit |
 
@@ -28,7 +28,7 @@ Targets below are proposed pilot goals. No user or revenue results are asserted.
 - Reported again after 7 days: yes / no / no response / not yet asked:
 - Last real task completed:
 - Most valuable workflow / repeated pain point:
-- Optional support interest: not asked / declined / stated interest / actual payment:
+- Paid-workflow feedback: not asked / declined / stated interest / actual purchase:
 
 Do not store cookies, credentials, private source links, audio or contact details
 here. Ask before publishing a quotation. Keep interview answers separate from
@@ -42,7 +42,7 @@ requests per person; they are not unique users or successful installs.
 - Time spent:
 - Observed clicks/download requests (if actually measured):
 - Human task reports attributable to this channel:
-- Returning users / actual supporters attributable to it:
+- Returning users / actual purchasers attributable to it:
 - Decision: repeat / change message / stop, with evidence:
 
 No analytics tracker or background telemetry has been installed for this plan.
