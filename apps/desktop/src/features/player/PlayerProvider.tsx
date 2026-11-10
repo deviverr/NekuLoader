@@ -72,6 +72,7 @@ export function PlayerProvider({
   const [artworkUrl, setArtworkUrl] = useState<string>();
   const [error, setError] = useState<string>();
   const restored = useRef(false);
+  const [checkpoint, setCheckpoint] = useState(0);
   /** Whether the next loaded source should start playing on its own. */
   const wantPlay = useRef(false);
   /** Saved position, applied once to the restored track when it loads. */
@@ -103,10 +104,21 @@ export function PlayerProvider({
   // Load the current track's source and artwork.
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !current) {
+    if (!audio) return;
+    if (!current) {
+      wantPlay.current = false;
+      if (audio.hasAttribute("src")) {
+        audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
+      }
+      setPlaying(false);
+      setPosition(0);
+      setDuration(0);
       setArtworkUrl(undefined);
       return;
     }
+    audio.pause();
     let stale = false;
     setError(undefined);
     // A new source starts at zero; stale time from the last track must not show.
@@ -232,7 +244,11 @@ export function PlayerProvider({
       next,
       previous,
       seek: (seconds) => {
-        if (audioRef.current) audioRef.current.currentTime = seconds;
+        if (audioRef.current) {
+          audioRef.current.currentTime = seconds;
+          setPosition(seconds);
+          setCheckpoint((value) => value + 1);
+        }
       },
       setVolume: setVolumeState,
       toggleShuffle: () =>
@@ -272,6 +288,8 @@ export function PlayerProvider({
           return trimmed;
         }),
       clear: () => {
+        wantPlay.current = false;
+        pendingSeek.current = null;
         setQueue([]);
         setCurrentIndex(null);
         setPlaying(false);
@@ -296,8 +314,9 @@ export function PlayerProvider({
     ],
   );
 
-  // Persist on meaningful changes only — not on every position tick.
+  // Save transport changes and explicit seeks without writing every time tick.
   useEffect(() => {
+    if (!restored.current && initial.queueTrackIds.length > 0) return;
     const state: PlaybackState = {
       queueTrackIds: queue.map((track) => track.id),
       currentIndex,
@@ -310,10 +329,9 @@ export function PlayerProvider({
       void api.savePlaybackState(state).catch(() => undefined);
     }, 800);
     return () => window.clearTimeout(timer);
-    // positionSeconds is excluded so a playing track does not write every second;
-    // the position that lands is whatever the last structural change captured.
+    // Position is captured on pause, seek, and structural changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queue, currentIndex, shuffle, repeatMode, volume]);
+  }, [queue, currentIndex, shuffle, repeatMode, volume, playing, checkpoint]);
 
   return (
     <PlayerContext.Provider value={value}>
@@ -324,12 +342,21 @@ export function PlayerProvider({
           wantPlay.current = true;
           setPlaying(true);
         }}
-        onPause={() => setPlaying(false)}
+        onPause={(event) => {
+          setPosition(event.currentTarget.currentTime);
+          setPlaying(false);
+          setCheckpoint((value) => value + 1);
+        }}
+        onSeeked={(event) => {
+          setPosition(event.currentTarget.currentTime);
+          setCheckpoint((value) => value + 1);
+        }}
         onTimeUpdate={(event) => setPosition(event.currentTarget.currentTime)}
         onDurationChange={(event) => setDuration(event.currentTarget.duration || 0)}
         onLoadedMetadata={(event) => {
           if (pendingSeek.current != null) {
             event.currentTarget.currentTime = pendingSeek.current;
+            setPosition(pendingSeek.current);
             pendingSeek.current = null;
           }
         }}

@@ -17,3 +17,7 @@ summary.txt
 __pycache__/
 *.pyc
 .env
+
+# Buildless landing-page source is intentionally deployable as-is.
+!apps/site/dist/
+!apps/site/dist/**

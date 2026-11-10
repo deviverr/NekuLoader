@@ -77,6 +77,6 @@ The 3.1 package discovers tools from the host `PATH`, common installation folder
 
 ## Release status
 
-NekuLoader 3.2 is a prerelease and is not yet the stable replacement for 3.1. The release workflow builds draft platform artifacts without project signing credentials. Public distribution still requires target-platform smoke testing and an intentional Apple/Windows signing policy; alpha updates are downloaded manually from GitHub Releases.
+NekuLoader 3.2 is a prerelease and is not yet the stable replacement for 3.1. The release workflow builds draft platform artifacts without project signing credentials. The public alpha currently offers a locally tested, unsigned and unnotarized macOS Apple silicon installer at https://nekudev.com/nekuloader/. Windows, Linux and Intel Mac downloads are unavailable while GitHub Actions is blocked by an account billing issue; alpha updates are downloaded manually from GitHub Releases.
 
-No project license has been selected in this repository. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) before redistributing source, assets, helper tools, or installers.
+NekuLoader is a free proprietary alpha: official binaries may be downloaded and used free of charge; source code and original asset rights remain reserved under `LICENSE.txt`. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) before redistributing source, assets, helper tools, or installers.

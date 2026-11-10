@@ -147,7 +147,7 @@ export function LibraryView({
                 track={track}
                 active={player.current?.id === track.id}
                 playing={player.playing}
-                onPlay={() => play(index)}
+                onPlay={() => player.current?.id === track.id ? player.toggle() : play(index)}
               />
             ))}
           </div>
@@ -173,7 +173,7 @@ function TrackRow({
 
   return (
     <div className={active ? "track track--active" : "track"}>
-      <button type="button" className="track__play" aria-label={`Play ${track.title}`} onClick={onPlay}>
+      <button type="button" className="track__play" aria-label={`${active && playing ? "Pause" : "Play"} ${track.title}`} onClick={onPlay}>
         <span className="track__thumb">
           {cover ? <img src={cover} alt="" /> : <span aria-hidden="true">♪</span>}
         </span>

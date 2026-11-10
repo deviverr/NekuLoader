@@ -49,7 +49,7 @@ export function SettingsView({
   toast: (message: string, tone?: "success" | "error" | "info") => void;
 }) {
   const t = useT();
-  const [tab, setTab] = useState<Tab>("general");
+  const [tab, setTab] = useState<Tab>(() => tools.some((tool) => tool.required && !tool.installed) ? "components" : "general");
   const [draft, setDraft] = useState(settings);
   const [dirty, setDirty] = useState(false);
 

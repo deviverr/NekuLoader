@@ -83,7 +83,7 @@ Do not call an artifact signed, notarized, or production-ready unless the corres
 
 ## Licensing checkpoint
 
-The repository does not currently declare a NekuLoader project license. Before public redistribution, review `THIRD_PARTY_NOTICES.md`, generate complete npm and Cargo license reports, audit the original icon and other assets, and preserve all obligations for runtime-downloaded helper binaries.
+The owner selected a free proprietary alpha on 2026-11-10; see `LICENSE.txt`. Earlier no-license notes below describe historical status. Before public redistribution, review `THIRD_PARTY_NOTICES.md`, generate complete npm and Cargo license reports, audit the original icon and other assets, and preserve all obligations for runtime-downloaded helper binaries.
 
 
 ## Local completion verification — 2026-11-04
@@ -131,3 +131,46 @@ preflight fails if any required secret is missing, and signed builds must pass
 owner confirms the intended Apple team. Do not reuse an unrelated identity merely
 because it is present in the local Keychain. Xcode login alone does not configure
 these GitHub-hosted runner secrets.
+
+## Local verification — 2026-11-10
+
+Selected project base: `/Users/dev/Projects/NekuLoader/recovered-src` (alpha.2).
+The older KINGSTON worktree is preserved separately. Added first-run Components
+selection, dialog keyboard focus containment/restoration, audio stop/unload when
+clearing/removing the final track, pause/seek position checkpoints, and active-row
+pause/resume. TypeScript and 23 component tests passed; production frontend build
+passed. Native Rust checks passed 52 tests with 7 opt-in integration tests ignored.
+See `docs/USER-TEST-REPORT.md` for the distinction between simulated journeys and
+real installed-app/device verification.
+
+On this host, release compilation initially failed loading proc-macro crates.
+A fresh target directory with `CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG=true`
+compiled successfully. Packaging is a separate verification step; do not infer
+signing, notarization, platform smoke tests, or public release from compilation.
+
+The static landing page is in `apps/site`. Its uploaded staging copy at
+`/home/nekudev/nekuloader-release-20261110` on the VPS has matching HTML SHA-256.
+Activated on 2026-11-10 using the authorized administrator session. Public HTTPS
+and direct-origin HTTPS return 200, the no-slash path redirects to /nekuloader/,
+and the public HTML hash matches the local source. Let’s Encrypt renewal is enabled.
+No project license was selected and no stable release was declared.
+
+The refreshed Apple silicon DMG was packaged successfully and passed `hdiutil verify`.
+Its checksum and installer are saved in `releases/local-20261110/`.
+
+## Public alpha.3 preparation — 2026-11-10
+
+The owner explicitly selected free proprietary binaries with source/original
+asset rights reserved. `LICENSE.txt` preserves third-party license rights. The
+app embeds the dependency notice ZIP and MPL-covered source archives from
+`apps/desktop/src-tauri/resources/third-party-notices.zip`, which is tracked so
+fresh source checkouts can reproduce packaging. The standalone archive is also
+distributed with the installer. The runtime helper executables are not bundled.
+
+Alpha.3 passed 24 frontend tests and 52 Rust tests. Native installed-app workflow
+and the additional album-row fix were verified; see `docs/USER-TEST-REPORT.md`.
+The final Mac artifact was generated with the selected 1.95 Rust toolchain and
+`CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG=true npm run tauri build -- --bundles dmg -- --locked`.
+Public release scope is the locally tested macOS arm64 alpha. Broader platform
+coverage remains explicit in `docs/releases/v3.2.0-alpha.3.md`. GitHub Actions is
+blocked by an account billing lock; failed jobs did not execute tests.

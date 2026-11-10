@@ -1,0 +1,12 @@
+{
+  "downloads": [
+    {
+      "platform": "macos-arm64",
+      "version": "3.2.0-alpha.3",
+      "url": "/nekuloader/downloads/NekuLoader_3.2.0-alpha.3_aarch64.dmg",
+      "sha256": "d07e1e0edd22db0e66161d904be3a484b9c56b18fcec1c7f978e82f44b21b35e",
+      "available": true,
+      "unsigned": true
+    }
+  ]
+}

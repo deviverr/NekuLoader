@@ -1,0 +1,22 @@
+NekuLoader Free Proprietary Alpha License
+Copyright (c) 2026 NekuLoader authors. All rights reserved.
+
+You may download, install, and run unmodified official NekuLoader alpha binaries
+free of charge for personal or commercial use.
+
+No permission is granted to modify or redistribute NekuLoader source code,
+original artwork, or modified binaries. Other rights are reserved, subject to
+rights that cannot be excluded under applicable law. This notice does not
+restrict any rights granted by licenses of third-party components.
+
+Third-party software and fonts retain their respective copyrights and licenses.
+See THIRD_PARTY_NOTICES.md and the accompanying third-party notices archive.
+Downloader components are obtained separately from their upstream publishers;
+their respective licenses continue to apply.
+
+This alpha software is provided as is, without warranty of any kind, to the
+extent permitted by applicable law. Its authors are not liable for damages
+arising from its use to the extent permitted by applicable law.
+
+Use NekuLoader only with media you own or are authorized to download. This
+license grants no rights to third-party media or provider services.

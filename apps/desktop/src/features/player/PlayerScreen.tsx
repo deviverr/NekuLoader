@@ -61,7 +61,7 @@ export function PlayerScreen({ library, scanError }: { library: LibraryTrack[]; 
                 track={track}
                 index={index}
                 active={index === player.currentIndex}
-                onPlay={() => player.playQueue(player.queue, index)}
+                onPlay={() => index === player.currentIndex ? player.toggle() : player.playQueue(player.queue, index)}
                 onRemove={() => player.removeAt(index)}
               />
             ))}
@@ -343,7 +343,7 @@ function MusicBrowser({ library }: { library: LibraryTrack[] }) {
             album={album}
             open={open === album.key || query.trim().length > 0 || albums.length === 1}
             onToggle={() => setOpen((current) => (current === album.key ? null : album.key))}
-            onPlay={(index) => player.playQueue(album.tracks, index)}
+            onPlay={(index) => album.tracks[index]?.id === player.current?.id ? player.toggle() : player.playQueue(album.tracks, index)}
             currentId={player.current?.id}
             playing={player.playing}
           />
@@ -396,8 +396,8 @@ function AlbumRow({
             const active = track.id === currentId;
             return (
               <li key={track.id}>
-                <button type="button" className={active ? "album-track album-track--active" : "album-track"} onClick={() => onPlay(index)}>
-                  <span className="album-track__index">{active ? (playing ? "▶" : "❚❚") : String(track.trackNumber ?? index + 1).padStart(2, "0")}</span>
+                <button type="button" className={active ? "album-track album-track--active" : "album-track"} aria-label={`${active && playing ? "Pause" : "Play"} ${track.title}`} onClick={() => onPlay(index)}>
+                  <span className="album-track__index">{active ? (playing ? "❚❚" : "▶") : String(track.trackNumber ?? index + 1).padStart(2, "0")}</span>
                   <span className="album-track__title">{track.title}</span>
                   <span className="album-track__meta">{track.format}</span>
                   <span className="album-track__time">{formatDuration(track.durationSeconds)}</span>

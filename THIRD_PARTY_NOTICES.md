@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-No project license has been selected for NekuLoader. These notices describe third-party components only and do not grant a license to the NekuLoader source or original assets.
+NekuLoader is distributed as a free proprietary alpha under `LICENSE.txt`. These notices describe third-party components; their licenses govern those components independently.
 
 ## NekuLoader 3.1 legacy Java edition
 
