@@ -6,7 +6,7 @@
       detail: 'macOS 12+ · Apple silicon.',
       warning: build => build.unsigned === true
         ? 'Unsigned; not notarized.'
-        : 'See release notes for signing status.',
+        : build.notarized === true ? 'Signed and notarized by Apple.' : 'See release notes for signing status.',
     },
     {
       platform: 'linux-x64', prefix: 'linux-download', buttonId: 'linux-download', extension: '.deb', name: 'Linux',

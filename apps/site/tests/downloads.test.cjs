@@ -92,3 +92,11 @@ test('Windows testing installer shows only an explicit experimental EXE', async 
  assert.match(ui['windows-download-warning'].textContent,/native Windows feedback pending/);
  const bad=await render([build('windows-x64',{experimental:false})]);hidden(bad.elements,'windows-download');
 });
+test('Mac signing notice claims notarization only for an explicit notarized build', async () => {
+ const signed = await render([build('macos-arm64', {unsigned: false, notarized: true})]);
+ assert.equal(signed.elements['download-warning'].textContent, 'Signed and notarized by Apple.');
+ const unknown = await render([build('macos-arm64', {unsigned: false})]);
+ assert.equal(unknown.elements['download-warning'].textContent, 'See release notes for signing status.');
+ const conflicting = await render([build('macos-arm64', {unsigned: true, notarized: true})]);
+ assert.equal(conflicting.elements['download-warning'].textContent, 'Unsigned; not notarized.');
+});
