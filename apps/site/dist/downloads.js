@@ -3,15 +3,21 @@
   const panels = [
     {
       platform: 'macos-arm64', prefix: 'download', buttonId: 'mac-download', extension: '.dmg', name: 'Mac',
-      detail: 'For Apple silicon Macs. This is a testing prerelease; read the release notes before installing.',
+      detail: 'macOS 12+ · Apple silicon.',
       warning: build => build.unsigned === true
-        ? 'Not signed with Apple Developer ID or notarized. macOS may block opening this experimental build.'
-        : 'Check the release notes for this build’s exact signing and notarization status.',
+        ? 'Unsigned; not notarized.'
+        : 'See release notes for signing status.',
     },
     {
       platform: 'linux-x64', prefix: 'linux-download', buttonId: 'linux-download', extension: '.deb', name: 'Linux',
-      detail: 'Debian 12 x64 .deb · glibc 2.36 or newer. Experimental: headless startup tested; desktop and phone validation ongoing.',
-      warning: () => 'Experimental Linux build. Headless startup does not verify desktop integration, audio playback or physical phone transfer.',
+      detail: 'Debian 12 · x64 · glibc 2.36+.',
+      warning: () => 'Experimental; headless tests only.',
+      requiresExperimental: true,
+    },
+    {
+      platform: 'windows-x64', prefix: 'windows-download', buttonId: 'windows-download', extension: '.exe', name: 'Windows',
+      detail: 'Windows 10/11 · x64.',
+      warning: () => 'Unsigned testing build; native Windows feedback pending.',
       requiresExperimental: true,
     },
   ];
@@ -25,8 +31,8 @@
     };
   }
   function unavailable(panel, ui) {
-    ui.status.textContent = `No ${panel.name} installer is listed right now.`;
-    ui.detail.textContent = 'Check GitHub Releases for current availability and known issues.';
+    ui.status.textContent = panel.platform === "windows-x64" ? "Build in progress" : "Unavailable";
+    ui.detail.textContent = '';
     ui.warning.textContent = '';
     ui.button.hidden = true;
     ui.button.removeAttribute('href');

@@ -5,13 +5,14 @@ const vm = require('node:vm');
 const path = require('node:path');
 const script = fs.readFileSync(path.join(__dirname, '../dist/downloads.js'), 'utf8');
 function build(platform, overrides = {}) {
-  return {platform, version: '3.2.0-alpha.3', url: `/nekuloader/downloads/test${platform === 'linux-x64' ? '.deb' : '.dmg'}`,
+  return {platform, version: '3.2.0-alpha.3', url: `/nekuloader/downloads/test${platform === 'linux-x64' ? '.deb' : platform === 'windows-x64' ? '.exe' : '.dmg'}`,
     sha256: 'a'.repeat(64), available: true, experimental: true, unsigned: true, ...overrides};
 }
 async function render(downloads, {manifestError, manifestOk = true, head = () => ({ok: true, type: 'application/octet-stream'})} = {}) {
   const elements = {};
   const requests = [];
   for (const id of ['download-status','download-detail','download-warning','mac-download','download-checksum',
+    'windows-download-status','windows-download-detail','windows-download-warning','windows-download','windows-download-checksum',
     'linux-download-status','linux-download-detail','linux-download-warning','linux-download','linux-download-checksum']) {
     elements[id] = {hidden: true, textContent: '', setAttribute(name, value) {this[name] = value;}, removeAttribute(name) {delete this[name];}};
   }
@@ -41,16 +42,16 @@ test('both verified entries show correct platform links, checksums and experimen
   assert.match(ui['linux-download'].href, /\.deb$/);
   assert.match(ui['download-warning'].textContent, /notarized/);
   assert.match(ui['linux-download-detail'].textContent, /glibc 2\.36/);
-  assert.match(ui['linux-download-warning'].textContent, /Headless startup does not verify/);
+  assert.match(ui['linux-download-warning'].textContent, /headless tests only/);
   for (const id of ['download-checksum','linux-download-checksum']) assert.match(ui[id].textContent, /a{64}/);
 });
 test('missing Linux entry leaves Mac available and no Linux button', async () => {
   const {elements: ui} = await render([build('macos-arm64')]);
   assert.equal(ui['mac-download'].hidden, false); hidden(ui, 'linux-download');
 });
-for (const platform of ['macos-arm64','linux-x64']) {
-  const id = platform === 'linux-x64' ? 'linux-download' : 'mac-download';
-  const checksum = platform === 'linux-x64' ? 'linux-download-checksum' : 'download-checksum';
+for (const platform of ['macos-arm64','linux-x64','windows-x64']) {
+  const id = platform === 'linux-x64' ? 'linux-download' : platform === 'windows-x64' ? 'windows-download' : 'mac-download';
+  const checksum = platform === 'linux-x64' ? 'linux-download-checksum' : platform === 'windows-x64' ? 'windows-download-checksum' : 'download-checksum';
   for (const [name, overrides] of Object.entries({unavailable: {available: false}, external: {url: 'https://elsewhere.example/nekuloader/downloads/test.deb'},
     traversal: {url: '/nekuloader/downloads/../test.deb'}, htmlExtension: {url: '/nekuloader/downloads/test.html'},
     invalidChecksum: {sha256: 'placeholder'}, emptyVersion: {version: ''}})) {
@@ -82,4 +83,12 @@ for (const options of [{manifestError: true},{manifestOk: false}]) {
 test('failed Linux probe does not suppress working Mac installer', async () => {
   const {elements: ui} = await render([build('macos-arm64'),build('linux-x64')], {head: url => ({ok: url.endsWith('.dmg'),type: 'application/octet-stream'})});
   assert.equal(ui['mac-download'].hidden, false); hidden(ui, 'linux-download');
+});
+
+test('Windows testing installer shows only an explicit experimental EXE', async () => {
+ const {elements:ui}=await render([build('windows-x64')]);
+ assert.equal(ui['windows-download'].hidden,false);
+ assert.match(ui['windows-download'].href,/\.exe$/);
+ assert.match(ui['windows-download-warning'].textContent,/native Windows feedback pending/);
+ const bad=await render([build('windows-x64',{experimental:false})]);hidden(bad.elements,'windows-download');
 });

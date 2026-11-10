@@ -1,21 +1,17 @@
-# NekuLoader website
+# NekuLoader download page
 
-Buildless HTML/CSS/JavaScript source in `dist/`, using the real desktop Cosmic
-colors, Pixelify Sans (OFL notice included), stars, pixel controls, and an actual
-alpha.3 application screenshot. No analytics or external font requests.
+Minimal total-black/white page with the Pixelify typeface, actual app screenshot,
+three platform download cards, and essential release/license links. No marketing
+sections, FAQ, feature grid, analytics, or remote fonts. `downloads.js` uses the
+same-origin availability manifest; unavailable binaries never become buttons.
 
-Host: `nekudev.com/nekuloader/`, files `/var/www/nekudev/nekuloader/` on
-169.58.10.252. Nginx configuration: `/etc/nginx/sites-available/nekudev.com`.
-HTTPS and renewal use Certbot. Other site routes/virtual hosts are separate.
+The NekuDev root homepage is separate: `apps/home/dist` contains only the user’s
+snow-leopard image. Its visible page contains no text or navigation.
 
-`downloads.js` reads `/nekuloader/downloads/manifest.json`. It shows a download
-only for an explicitly available same-origin DMG with a SHA-256 digest and a
-successful non-HTML HEAD response. Installer binaries are release artifacts,
-not Git-tracked website source. Copy verified artifacts alongside the manifest
-when deploying. Windows and Intel Mac remain unavailable. The experimental Debian 12 x64 DEB
-is offered with its headless-test limitations stated. The free proprietary license preserves third-party license rights.
+Production paths on 169.58.10.252:
+- `/var/www/nekudev/index.html` and `/var/www/nekudev/snow-leopard.png`
+- `/var/www/nekudev/nekuloader/`
+- `/etc/nginx/sites-available/nekudev.com`
 
-Responsive browser checks passed at mobile and desktop widths, with loaded
-images and no horizontal overflow. Download availability logic has separate
-success/error-state checks. A production deployment must additionally verify
-actual file bytes, checksums and HTTP range support.
+Download files are external release artifacts; source includes only the manifest.
+The 37 availability/error-path checks include the Windows testing-build gate.

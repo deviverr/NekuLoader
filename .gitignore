@@ -21,3 +21,7 @@ __pycache__/
 # Buildless landing-page source is intentionally deployable as-is.
 !apps/site/dist/
 !apps/site/dist/**
+
+# Static NekuDev homepage source.
+!apps/home/dist/
+!apps/home/dist/**
