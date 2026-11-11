@@ -1,17 +1,31 @@
 # NekuLoader download page
 
-Minimal total-black/white page with the Pixelify typeface, actual app screenshot,
-three platform download cards, and essential release/license links. No marketing
-sections, FAQ, feature grid, analytics, or remote fonts. `downloads.js` uses the
-same-origin availability manifest; unavailable binaries never become buttons.
+Black cosmic page using the desktop app's original block wordmark, pixel sky,
+planet drawing and sleeping cat. The cat is fixed to the browser viewport's
+bottom edge, outside the app screenshot. Includes a current screenshot, concise
+feature/setup details, and platform download cards with explicit signing/test
+status. No analytics or remote fonts.
 
-The NekuDev root homepage is separate: `apps/home/dist` contains only the user’s
-snow-leopard image. Its visible page contains no text or navigation.
+The NekuDev root homepage remains separate and image-only (`apps/home/dist`).
 
-Production paths on 169.58.10.252:
-- `/var/www/nekudev/index.html` and `/var/www/nekudev/snow-leopard.png`
+Regenerate the original app drawing code for the site with:
+
+```sh
+node apps/site/scripts/build-effects.mjs
+```
+
+This uses the desktop checkout's installed esbuild to transpile the original
+canvas drawing helpers. No React runtime is shipped on the site. If effects
+change, update the `site-effects.js` cache key in index.html. Background motion
+pauses in hidden tabs and respects the system reduced-motion preference.
+
+Production paths on the existing VPS:
 - `/var/www/nekudev/nekuloader/`
 - `/etc/nginx/sites-available/nekudev.com`
 
-Download files are external release artifacts; source includes only the manifest.
-The 37 availability/error-path checks include the Windows testing-build gate.
+Download binaries are release artifacts; tracked source contains the manifest
+and page assets. The 38 availability/error/signing-notice checks are run with
+`node --test apps/site/tests/downloads.test.cjs`.
+
+The Nov 11, 2026 dated Mac DMG contains the updated UI and notarized app.
+Windows/Linux remain the earlier alpha.3 packages, as labelled on the page.

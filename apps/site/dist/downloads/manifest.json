@@ -3,11 +3,12 @@
     {
       "platform": "macos-arm64",
       "version": "3.2.0-alpha.3",
-      "url": "/nekuloader/downloads/NekuLoader_3.2.0-alpha.3_aarch64-notarized.dmg",
-      "sha256": "a3a894a9e6e18d7bd577e4145f9cede0a7fe4e5603ab3d56c2ce82a9554d5fc5",
+      "url": "/nekuloader/downloads/NekuLoader_3.2.0-alpha.3_aarch64-notarized-20261111.dmg",
+      "sha256": "d0835bb12790117ac6587b0611c2dfac614f3a3bc1cb5e98d8af84e67dee16ab",
       "available": true,
       "unsigned": false,
-      "notarized": true
+      "notarized": true,
+      "revision": "2026-11-11"
     },
     {
       "platform": "linux-x64",
