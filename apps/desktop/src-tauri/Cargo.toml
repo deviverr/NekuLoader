@@ -1,6 +1,6 @@
 [package]
 name = "nekuloader-desktop"
-version = "3.2.0-alpha.3"
+version = "3.2.0-alpha.4"
 description = "NekuLoader native cross-platform music downloader"
 authors = ["deviverr"]
 edition = "2024"

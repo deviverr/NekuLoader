@@ -2465,7 +2465,7 @@ dependencies = [
 
 [[package]]
 name = "nekuloader-desktop"
-version = "3.2.0-alpha.3"
+version = "3.2.0-alpha.4"
 dependencies = [
  "chrono",
  "lofty",
