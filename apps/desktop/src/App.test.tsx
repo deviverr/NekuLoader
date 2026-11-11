@@ -196,7 +196,7 @@ describe("theme", () => {
   it("defaults to the monochrome skin at full ASCII density", async () => {
     render(<App />);
     await screen.findByLabelText("Music link");
-    expect(document.documentElement.dataset.theme).toBe("mono");
+    await waitFor(() => expect(document.documentElement.dataset.theme).toBe("mono"));
     expect(document.documentElement.dataset.density).toBe("full");
   });
 
