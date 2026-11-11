@@ -28,6 +28,26 @@ describe("shell", () => {
     );
     // The rework drops legacy 3.1's manual Source/Type combos entirely.
     expect(screen.queryByLabelText(/^source$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("Direct download")).not.toBeInTheDocument();
+    expect(screen.queryByText("Metadata matching")).not.toBeInTheDocument();
+  });
+
+  it("keeps the bottom player mounted while switching to the Player page", async () => {
+    const track = trackFixture();
+    vi.spyOn(api, "bootstrap").mockResolvedValue(bootstrapFixture({
+      playback: { ...bootstrapFixture().playback, queueTrackIds: [track.id], currentIndex: 0 },
+    }));
+    vi.spyOn(api, "scanLibrary").mockResolvedValue([track]);
+    vi.spyOn(HTMLMediaElement.prototype, "load").mockImplementation(() => {});
+    vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
+    const user = userEvent.setup();
+    const { container } = render(<App />);
+    await screen.findByLabelText("Music link");
+    await waitFor(() => expect(container.querySelector(".mini-player")).not.toBeNull());
+    const bar = container.querySelector(".mini-player");
+    await user.click(screen.getByRole("tab", { name: /^Player$/i }));
+    expect(container.querySelector(".mini-player")).toBe(bar);
+    expect(bar?.closest(".player-dock")).not.toBeNull();
   });
 
   it("shows the three slides and a classic menu bar", async () => {

@@ -8,8 +8,7 @@ import type { AppSettings } from "../types";
  * `image-rendering: pixelated`, so every star and planet lands on a chunky,
  * crisp pixel grid. Stars fall top-to-bottom by default (the starAngle setting
  * still steers them) in three depth layers; the nearest layer twinkles as
- * little plus-shaped sparkles. Planets are dithered spheres rendered once per
- * resize or theme change.
+ * little plus-shaped sparkles. Cached dithered planets drift independently.
  */
 const PIXEL = 3;
 const FRAME_MS = 1000 / 30;
@@ -106,18 +105,20 @@ export function PixelSky({ settings }: { settings: AppSettings }) {
     let width = 0;
     let height = 0;
     let stars: Star[] = [];
-    let planets: HTMLCanvasElement | null = null;
+    let planets: HTMLCanvasElement[] = [];
+    let planetTime = 0;
     let colors = themeColors();
     let raf = 0;
     let last = 0;
 
     const buildPlanets = () => {
-      planets = document.createElement("canvas");
-      planets.width = width;
-      planets.height = height;
-      const pctx = planets.getContext("2d");
-      if (!pctx) return;
-      for (const planet of PLANETS) drawPlanet(pctx, planet, width, height, colors);
+      planets = PLANETS.map((planet) => {
+        const sprite = document.createElement("canvas");
+        sprite.width = sprite.height = planet.r * 4 + 4;
+        const pctx = sprite.getContext("2d");
+        if (pctx) drawPlanet(pctx, { ...planet, cx: 0.5, cy: 0.5 }, sprite.width, sprite.height, colors);
+        return sprite;
+      });
     };
 
     const resize = () => {
@@ -142,7 +143,16 @@ export function PixelSky({ settings }: { settings: AppSettings }) {
       last = now;
 
       ctx.clearRect(0, 0, width, height);
-      if (planets) ctx.drawImage(planets, 0, 0);
+      if (moving) planetTime += dt * Math.max(0, current.snowSpeed);
+      planets.forEach((sprite, index) => {
+        const planet = PLANETS[index];
+        const phase = index * 1.7;
+        const orbit = planetTime * (0.24 + index * 0.035);
+        // Subtract the starting phase so reduced motion keeps the original layout.
+        const dx = (Math.sin(orbit + phase) - Math.sin(phase)) * Math.min(12, width * 0.025);
+        const dy = (Math.cos(orbit * 0.8 + phase) - Math.cos(phase)) * Math.min(9, height * 0.025);
+        ctx.drawImage(sprite, Math.round(planet.cx * width - sprite.width / 2 + dx), Math.round(planet.cy * height - sprite.height / 2 + dy));
+      });
 
       const angle = ((current.starAngle ?? 180) * Math.PI) / 180;
       const dirX = Math.sin(angle);

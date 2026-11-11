@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef } from "react";
  * consistent between poses. Rendered to a canvas and scaled with
  * `image-rendering: pixelated`.
  */
-export type CatPose = "run" | "sleep";
+export type CatPose = "run" | "sleep" | "pet";
 
 const W = 28;
 const H = 18;
@@ -120,6 +120,19 @@ function sleepFrame(breath: number): Grid {
   return outline(g);
 }
 
+function petFrame(step: number): Grid {
+  const g = blank();
+  rect(g, 4, 10, 20, 15);
+  rect(g, 5, 9, 19, 9);
+  rect(g, 5, 16, 19, 16, 2);
+  head(g, 16, 5, false);
+  // A lifted tail and closed eyes while enjoying a scratch.
+  const lift = step % 2;
+  rect(g, 2, 9 - lift, 3, 14);
+  rect(g, 3, 7 - lift, 5, 8 - lift);
+  return outline(g);
+}
+
 function colors() {
   const style = getComputedStyle(document.documentElement);
   const read = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback;
@@ -144,7 +157,7 @@ const Z = [
 export function PixelCat({ pose, scale = 4, playing = true }: { pose: CatPose; scale?: number; playing?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frames = useMemo(
-    () => (pose === "run" ? [0, 1, 2, 3].map(runFrame) : [0, 1].map(sleepFrame)),
+    () => pose === "run" ? [0, 1, 2, 3].map(runFrame) : [0, 1].map(pose === "pet" ? petFrame : sleepFrame),
     [pose],
   );
 

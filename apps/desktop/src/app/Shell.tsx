@@ -56,9 +56,10 @@ export function Shell({
         <Slides slides={slides} index={slideIndex} onIndex={onSlideIndex} />
       </main>
 
-      {player}
-
-      <CatBar running={downloading} />
+      <footer className="player-dock">
+        <CatBar running={downloading} />
+        {player}
+      </footer>
 
       {overlay}
       {children}

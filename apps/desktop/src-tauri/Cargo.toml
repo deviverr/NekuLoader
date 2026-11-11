@@ -49,3 +49,10 @@ tauri-plugin-notification = "2"
 
 [dev-dependencies]
 tauri = { version = "2", features = ["test"] }
+
+# Rust's stripped build-time dylibs can fail to load with Xcode 27's linker.
+# Keep build tools intact; this does not enable debug code in the shipped app.
+# https://github.com/rust-lang/rust/issues/157750
+[profile.release.build-override]
+debug = true
+strip = "none"

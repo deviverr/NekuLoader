@@ -384,18 +384,7 @@ export function DownloadView({
             </div>
           </Panel>
         </div>
-      ) : (
-        <dl className="source-matrix">
-          <div>
-            <dt>{t("cap.direct")}</dt>
-            <dd>YouTube · YouTube Music · SoundCloud</dd>
-          </div>
-          <div>
-            <dt>{t("cap.matching")}</dt>
-            <dd>Spotify · Deezer · Apple Music</dd>
-          </div>
-        </dl>
-      )}
+      ) : null}
     </div>
   );
 }

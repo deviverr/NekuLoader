@@ -308,7 +308,7 @@ export default function App() {
           version={boot.version}
           downloading={activeCount > 0}
           backgroundUrl={api.backgroundUrl(settings.backgroundImagePath)}
-          player={slide === 1 ? undefined : <MiniPlayerBar onExpand={() => setSlide(1)} />}
+          player={<MiniPlayerBar onExpand={() => setSlide(1)} />}
           overlay={
             overlay && (
               <OverlayWindow

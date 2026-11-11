@@ -200,40 +200,6 @@
   gap: 8px;
 }
 
-.view-stack > .source-matrix {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  width: min(600px, 100%);
-  margin: 0 auto;
-  justify-self: center;
-}
-
-.source-matrix div {
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  padding: 10px 12px;
-  border: 2px solid var(--border-soft);
-  background: color-mix(in srgb, var(--surface) 55%, transparent);
-  clip-path: var(--pixel-clip);
-  text-align: center;
-}
-
-.source-matrix dt {
-  color: var(--text-muted);
-  font-family: var(--pixel-font);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.source-matrix dd {
-  margin: 0;
-  color: var(--text-faint);
-  font-size: 11px;
-}
-
 @media (max-width: 1040px) {
   .download-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -246,9 +212,6 @@
   }
   .quick-options,
   .primary-actions {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .view-stack > .source-matrix {
     grid-template-columns: minmax(0, 1fr);
   }
 }
