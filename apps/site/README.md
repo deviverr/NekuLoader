@@ -28,4 +28,5 @@ and page assets. The 38 availability/error/signing-notice checks are run with
 `node --test apps/site/tests/downloads.test.cjs`.
 
 The Nov 11, 2026 dated Mac DMG contains the updated UI and notarized app.
-Windows/Linux remain the earlier alpha.3 packages, as labelled on the page.
+Windows/Linux alpha.4 now carry the same interface, with their experimental
+platform testing limits retained.
